@@ -1,0 +1,16 @@
+{
+    "name": "xero/xero-php-oauth2-app",
+    "description": "Xero oAuth2 app for PHP",
+    "type": "project",
+    "require": {
+        "xeroapi/xero-php-oauth2": "0.2.4",
+        "monolog/monolog": "1.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Xero API Team",
+            "email": "api@xero.com"
+        }
+    ]
+}

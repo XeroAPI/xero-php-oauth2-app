@@ -1,0 +1,24 @@
+<div class="row">
+	<div class="col">
+		<h2>{{name}}</h2>
+	</div>
+</div>
+<div class="row">
+	<div class="col">
+		<a href="{{logoutUrl}}" class="btn btn-danger">Logout</a>
+		<a href="{{refreshUrl}}" class="btn btn-warning">Refresh</a>
+	</div>
+</div>
+<form method="post" action="get.php"><br>
+<div class="row">
+	<div class="col">
+		<select name="endpoint" class="form-control" id="endpoint"></select>
+	</div>
+	<div class="col">
+		<select name="action" class="form-control" id="action"></select>
+	</div>
+	<div class="col">
+		<input class="btn btn-primary" type="submit" value="submit">
+	</div>
+</div>
+</form>
