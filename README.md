@@ -1,5 +1,5 @@
 # Xero PHP oAuth 2 App
-This java project demonstrates how to use the Xero-Java SDK.  Clone this repository to your local machine to begin.
+This PHP project demonstrates how to use the Xero-php-oauth2 SDK.  Clone this repository to your local machine to begin.
 
 This is a project is for use with xero-php-oauth2 SDK. This app demonstrates the functionality of Xero accounting API endpoints and their related actions. 
 
