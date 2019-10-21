@@ -14,7 +14,7 @@ Follow these steps
 * Launch a terminal app and change to the newly cloned folder `xero-php-oauth2-app`
 * Download dependencies with Composer.
 
-`composer init`
+`composer install`
 
 New to Composer? You'll want to [install Composer](https://getcomposer.org/doc/00-intro.md)
 
