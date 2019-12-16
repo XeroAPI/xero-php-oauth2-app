@@ -32,9 +32,15 @@
             $accessToken = $provider->getAccessToken('authorization_code', [
                 'code' => $_GET['code']
             ]);
-           
-            $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$accessToken->getToken() );
           
+            $jwt = new XeroAPI\XeroPHP\JWTClaims(
+                $accessToken->getValues()["id_token"]
+             );
+ 
+             $jwt->decode();
+             echo $jwt->getGivenName();
+
+            $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$accessToken->getToken() );
             $config->setHost("https://api.xero.com"); 
             $identityInstance = new XeroAPI\XeroPHP\Api\IdentityApi(
                 new GuzzleHttp\Client(),
@@ -49,7 +55,9 @@
                 $accessToken->getToken(),
                 $accessToken->getExpires(),
                 $result[0]->getTenantId(),  
-                $accessToken->getRefreshToken());
+                $accessToken->getRefreshToken(),
+                $accessToken->getValues()["id_token"]
+            );
    
             header('Location: ' . './get.php');
             exit();

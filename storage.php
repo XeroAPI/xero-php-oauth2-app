@@ -20,13 +20,14 @@ class StorageClass
        	session_start();
 	}
 
-	public function setToken($token, $expires = null, $tenantId, $refreshToken)
+	public function setToken($token, $expires = null, $tenantId, $refreshToken, $idToken)
 	{    
 	    $_SESSION['oauth2'] = [
 	        'token' => $token,
 	        'expires' => $expires,
 	        'tenant_id' => $tenantId,
-	        'refresh_token' => $refreshToken
+	        'refresh_token' => $refreshToken,
+	        'id_token' => $idToken
 	    ];
 	}
 
@@ -60,6 +61,11 @@ class StorageClass
 	public function getXeroTenantId()
 	{
 	    return $_SESSION['oauth2']['tenant_id'];
+	}
+
+	public function getIdToken()
+	{
+	    return $_SESSION['oauth2']['id_token'];
 	}
 
 	public function getHasExpired()
