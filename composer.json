@@ -1,5 +1,5 @@
 {
-    "name": "xero/xero-php-oauth2-app",
+    "name": "xeroapi/xero-php-oauth2-app",
     "description": "Xero oAuth2 app for PHP",
     "type": "project",
     "require": {
