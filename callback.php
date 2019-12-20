@@ -3,13 +3,19 @@
     require __DIR__ . '/vendor/autoload.php';
     require_once('storage.php');
 
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+	$dotenv->load();
+	$clientId = getenv('CLIENT_ID');
+	$clientSecret = getenv('CLIENT_SECRET');
+	$redirectUri = getenv('REDIRECT_URI');
+
     // Storage Classe uses sessions for storing token > extend to your DB of choice
     $storage = new StorageClass();  
 
     $provider = new \League\OAuth2\Client\Provider\GenericProvider([
-        'clientId'                => '__YOUR_CLIENT_ID__',   
-        'clientSecret'            => '__YOUR_CLIENT_SECRET__',
-        'redirectUri'             => 'http://localhost:8888/xero-php-oauth2-app/callback.php',
+        'clientId'                => $clientId,   
+        'clientSecret'            => $clientSecret,
+        'redirectUri'             => $redirectUri,
         'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
         'urlAccessToken'          => 'https://identity.xero.com/connect/token',
         'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'

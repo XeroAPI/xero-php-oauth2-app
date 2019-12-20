@@ -5,6 +5,12 @@
 	require_once('storage.php');
 	require_once('example.php');
 
+	$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+	$dotenv->load();
+	$clientId = getenv('CLIENT_ID');
+	$clientSecret = getenv('CLIENT_SECRET');
+	$redirectUri = getenv('REDIRECT_URI');
+
 	// Storage Classe uses sessions for storing token > extend to your DB of choice
 	$storage = new StorageClass();
 
@@ -17,23 +23,25 @@
 	// if so - refresh token
 	if ($storage->getHasExpired()) {
 		$provider = new \League\OAuth2\Client\Provider\GenericProvider([
-          'clientId'                => '__YOUR_CLIENT_ID__',   
-          'clientSecret'            => '__YOUR_CLIENT_SECRET__',
-          'redirectUri'             => 'http://localhost:8888/xero-php-oauth2-app/callback.php',
-          'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
-          'urlAccessToken'          => 'https://identity.xero.com/connect/token',
-          'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
+			'clientId'                => $clientId,   
+			'clientSecret'            => $clientSecret,
+			'redirectUri'             => $redirectUri,
+        	'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
+        	'urlAccessToken'          => 'https://identity.xero.com/connect/token',
+        	'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
 		]);
 
 	    $newAccessToken = $provider->getAccessToken('refresh_token', [
 	        'refresh_token' => $storage->getRefreshToken()
 	    ]);
 	    // Save my token, expiration and refresh token
-        $storage->setToken(
+         // Save my token, expiration and refresh token
+		 $storage->setToken(
             $newAccessToken->getToken(),
             $newAccessToken->getExpires(), 
             $xeroTenantId,
-            $newAccessToken->getRefreshToken());
+            $newAccessToken->getRefreshToken(),
+            $newAccessToken->getValues()["id_token"] );
 	}
 
 	$config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$storage->getSession()['token'] );
@@ -107,8 +115,8 @@
 					{
 				    	case "Create":
 						echo $ex->createAccount($xeroTenantId,$apiInstance);
-				        break;
-				        case "Read":
+						break;
+				    	case "Read":
 				        echo $ex->getAccount($xeroTenantId,$apiInstance);
 				        break;
 				        case "Update":	
@@ -133,7 +141,10 @@
 					{
 				    	case "Create":
 				        print_r($ex->createBankTransaction($xeroTenantId,$apiInstance));
-				        break;
+						break;
+						case "CreateMulti":
+						print_r($ex->createBankTransactions($xeroTenantId,$apiInstance));
+						break;
 				        case "Read":
 				        echo $ex->getBankTransaction($xeroTenantId,$apiInstance);
 				        break;
@@ -178,7 +189,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createContact($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createContacts($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getContact($xeroTenantId,$apiInstance);
 				        break;
@@ -224,7 +238,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createCreditNote($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createCreditNotes($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getCreditNote($xeroTenantId,$apiInstance);
 				        break;
@@ -267,7 +284,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createEmployee($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createEmployees($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getEmployee($xeroTenantId,$apiInstance);
 				        break;
@@ -302,7 +322,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createInvoice($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createInvoices($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getInvoice($xeroTenantId,$apiInstance);
 				        break;
@@ -336,7 +359,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createItem($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createItems($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getItem($xeroTenantId,$apiInstance);
 				        break;
@@ -367,7 +393,7 @@
 					{
 				    	case "Create":
 				        echo $ex->createLinkedTransaction($xeroTenantId,$apiInstance);
-				        break;
+						break;
 				        case "Read":
 				        echo $ex->getLinkedTransaction($xeroTenantId,$apiInstance);
 				        break;
@@ -387,7 +413,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createManualJournal($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createManualJournals($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getManualJournal($xeroTenantId,$apiInstance);
 				        break;
@@ -421,7 +450,10 @@
 				        break;
 				        case "Allocate":
 				        echo $ex->allocateOverpayment($xeroTenantId,$apiInstance);
-				    	break;
+						break;
+						case "AllocateMulti":
+						echo $ex->allocateOverpayments($xeroTenantId,$apiInstance);
+						break;
 				    	case "Refund":
 				        echo $ex->refundOverpayment($xeroTenantId,$apiInstance);
 				    	break;
@@ -435,7 +467,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createPayment($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createPayments($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getPayment($xeroTenantId,$apiInstance);
 				        break;
@@ -446,7 +481,6 @@
 					    echo $action . " action not supported in API";
 				    }
 				 break;
-
 
 				 case "Prepayments":
 				    switch($action)
@@ -473,7 +507,10 @@
 					{
 				    	case "Create":
 				        echo $ex->createPurchaseOrder($xeroTenantId,$apiInstance);
-				        break;
+						break;
+						case "CreateMulti":
+						echo $ex->createPurchaseOrders($xeroTenantId,$apiInstance);
+						break;
 				        case "Read":
 				        echo $ex->getPurchaseOrder($xeroTenantId,$apiInstance);
 				        break;
@@ -558,7 +595,7 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createTaxRate($xeroTenantId,$apiInstance);
+				        echo $ex->createTaxRates($xeroTenantId,$apiInstance);
 				        break;
 				        case "Read":
 				        echo $ex->getTaxRate($xeroTenantId,$apiInstance);

@@ -189,7 +189,67 @@ $result = $apiInstance->createBankTransaction($xeroTenantId, $banktransaction);
 		} else {
 			return $str;
 		}
+	}
+
+	public function createBankTransactions($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+		$getAccount = $this->getBankAccount($xeroTenantId,$apiInstance,true);
+		$code = $getAccount->getAccounts()[0]->getCode();
+		$accountId = $getAccount->getAccounts()[0]->getAccountId();
+		$lineitem = $this->getLineItem();
+		$lineitems = [];		
+		array_push($lineitems, $lineitem);
+
+//[BankTransactions:CreateMulti]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactId($contactId);
+
+$bankAccount = new XeroAPI\XeroPHP\Models\Accounting\Account;
+$bankAccount->setCode($code)
+            ->setAccountId($accountId);
+
+$lineitems = [];		
+array_push($lineitems, $lineitem);
+
+$arr_banktransactions = [];	
+
+$banktransaction_1 = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
+$banktransaction_1->setReference('Ref-' . $this->getRandNum())
+	->setDate(new DateTime('2019-12-02'))
+	->setLineItems($lineitems)
+	->setType("RECEIVE")
+	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE)
+	->setBankAccount($bankAccount)
+	->setContact($contact);
+array_push($arr_banktransactions, $banktransaction_1);
+
+$banktransaction_2 = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
+$banktransaction_2->setReference('Ref-' . $this->getRandNum())
+	->setDate(new DateTime('2019-12-08'))
+	->setLineItems($lineitems)
+	->setType("RECEIVE")
+	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE)
+	->setBankAccount($bankAccount)
+	->setContact($contact);
+array_push($arr_banktransactions, $banktransaction_2);
 		
+$banktransactions = new XeroAPI\XeroPHP\Models\Accounting\BankTransactions;
+$banktransactions->setBankTransactions($arr_banktransactions);
+
+$result = $apiInstance->createBankTransactions($xeroTenantId, $banktransactions); 
+//[/BankTransactions:CreateMulti]
+
+		$str = $str ."Create Bank Transaction: " . $result->getBankTransactions()[0]->getReference() ." --- Create Bank Transaction 2: " . $result->getBankTransactions()[1]->getReference();	
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
 	}
 
 	public function updateBankTransaction($xeroTenantId,$apiInstance)
@@ -357,6 +417,43 @@ $result = $apiInstance->createContact($xeroTenantId,$contact);
 		}	
 	}
 
+
+	public function createContacts($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+//[Contacts:CreateMulti]
+$arr_contacts = [];	
+
+$contact_1 = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact_1->setName('FooBar' . $this->getRandNum())
+	->setFirstName("Foo" . $this->getRandNum())
+	->setLastName("Bar" . $this->getRandNum())
+	->setEmailAddress("ben.bowden@24locks.com");
+array_push($arr_contacts, $contact_1);
+	
+$contact_2 = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact_2->setName('FooBar' . $this->getRandNum())
+	->setFirstName("Foo" . $this->getRandNum())
+	->setLastName("Bar" . $this->getRandNum())
+	->setEmailAddress("ben.bowden@24locks.com");
+array_push($arr_contacts, $contact_2);
+			
+$contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
+$contacts->setContacts($arr_contacts);
+
+$result = $apiInstance->createContacts($xeroTenantId,$contacts); 
+//[/Contacts:CreateMulti]
+		
+		$str = $str ."Create Contact 1: " . $result->getContacts()[0]->getName() ." --- Create Contact 2: " . $result->getContacts()[1]->getName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}	
+	}
+	
 	public function updateContact($xeroTenantId,$apiInstance)
 	{
 		$str = '';
@@ -591,6 +688,51 @@ $result = $apiInstance->createCreditNote($xeroTenantId,$creditnote);
 		}
 	}
 
+	public function createCreditNotes($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$lineitems = [];		
+		array_push($lineitems, $this->getLineItem());
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+		
+//[CreditNotes:CreateMulti]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactId($contactId);
+
+$arr_creditnotes = [];	
+
+$creditnote_1 = new XeroAPI\XeroPHP\Models\Accounting\CreditNote;
+$creditnote_1->setDate(new DateTime('2019-12-15'))
+	->setContact($contact)
+	->setLineItems($lineitems)
+	->setType(XeroAPI\XeroPHP\Models\Accounting\CreditNote::TYPE_ACCPAYCREDIT);
+array_push($arr_creditnotes, $creditnote_1);
+	
+$creditnote_2 = new XeroAPI\XeroPHP\Models\Accounting\CreditNote;
+$creditnote_2->setDate(new DateTime('2019-12-02'))
+	->setContact($contact)
+	->setLineItems($lineitems)
+	->setType(XeroAPI\XeroPHP\Models\Accounting\CreditNote::TYPE_ACCPAYCREDIT);
+array_push($arr_creditnotes, $creditnote_2);
+			
+$creditnotes = new XeroAPI\XeroPHP\Models\Accounting\CreditNotes;
+$creditnotes->setCreditNotes($arr_creditnotes);
+
+$result = $apiInstance->createCreditNotes($xeroTenantId,$creditnotes); 
+//[/CreditNotes:CreateMulti]
+		
+		$str = $str ."Create CreditNote 1: " . $result->getCreditNotes()[0]->getTotal() ." --- Create CreditNote 2: " . $result->getCreditNotes()[1]->getTotal() . "<br>" ;
+
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
 	public function updateCreditNote($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -780,7 +922,6 @@ $result2 = $apiInstance->getEmployees($xeroTenantId, null, $where);
 		}
 	}	
 
-
 	public function createEmployee($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -802,7 +943,38 @@ $result = $apiInstance->createEmployee($xeroTenantId,$employee);
 		}
 	}	
 
+	public function createEmployees($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
 
+//[Employees:CreateMulti]
+$arr_employees = [];	
+
+$employee_1 = new XeroAPI\XeroPHP\Models\Accounting\Employee;
+$employee_1->setFirstName('Sid-' . $this->getRandNum())
+	->setLastName("Maestre - " . $this->getRandNum());	
+array_push($arr_employees, $employee_1);
+	
+$employee_2 = new XeroAPI\XeroPHP\Models\Accounting\Employee;
+$employee_2->setFirstName('Sid-' . $this->getRandNum())
+	->setLastName("Maestre - " . $this->getRandNum());	
+array_push($arr_employees, $employee_2);
+			
+$employees = new XeroAPI\XeroPHP\Models\Accounting\Employees;
+$employees->setEmployees($arr_employees);
+
+$result = $apiInstance->createEmployee($xeroTenantId,$employees); 
+//[/Employees:CreateMulti]
+		
+		$str = $str . "Create a new Employee 1: " . $result->getEmployees()[0]->getFirstName() . " and Create a new Employee 2: " . $result->getEmployees()[1]->getFirstName() . "<br>" ;
+
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}	
+	
 	public function updateEmployee($xeroTenantId,$apiInstance)
 	{
 		$str = '';
@@ -987,6 +1159,57 @@ $result = $apiInstance->createInvoice($xeroTenantId,$invoice);
 		}
 	}	
 
+	public function createInvoices($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+		
+		$lineitems = [];		
+		array_push($lineitems, $this->getLineItem());
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+
+//[Invoices:CreateMulti]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactId($contactId);
+
+$arr_invoices = [];	
+
+$invoice_1 = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
+$invoice_1->setReference('Ref-' . $this->getRandNum())
+	->setDueDate(new DateTime('2019-12-10'))
+	->setContact($contact)
+	->setLineItems($lineitems)
+	->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
+	->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCPAY)
+	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE);	
+array_push($arr_invoices, $invoice_1);
+	
+$invoice_2 = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
+$invoice_2->setReference('Ref-' . $this->getRandNum())
+	->setDueDate(new DateTime('2019-12-02'))
+	->setContact($contact)
+	->setLineItems($lineitems)
+	->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
+	->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCPAY)
+	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE);	
+array_push($arr_invoices, $invoice_2);
+			
+$invoices = new XeroAPI\XeroPHP\Models\Accounting\Invoices;
+$invoices->setInvoices($arr_invoices);
+
+$result = $apiInstance->createInvoices($xeroTenantId,$invoices); 
+//[/Invoices:CreateMulti]
+		
+		$str = $str ."Create Invoice 1 total amount: " . $result->getInvoices()[0]->getTotal() ." and Create Invoice 2 total amount: " . $result->getInvoices()[1]->getTotal() . "<br>" ;
+
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}	
+
 	public function updateInvoice($xeroTenantId,$apiInstance)
 	{
 		$str = '';
@@ -1100,6 +1323,42 @@ $result = $apiInstance->createItem($xeroTenantId,$item);
 		}
 	}
 
+	public function createItems($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+//[Items:CreateMulti]
+$arr_items = [];	
+
+$item_1 = new XeroAPI\XeroPHP\Models\Accounting\Item;
+$item_1->setName('My Item-' . $this->getRandNum())
+	->setCode($this->getRandNum())
+	->setDescription("This is my Item description.")
+	->setIsTrackedAsInventory(false);
+array_push($arr_items, $item_1);
+
+$item_2 = new XeroAPI\XeroPHP\Models\Accounting\Item;
+$item_2->setName('My Item-' . $this->getRandNum())
+	->setCode($this->getRandNum())
+	->setDescription("This is my Item description.")
+	->setIsTrackedAsInventory(false);
+array_push($arr_items, $item_2);
+	
+$items = new XeroAPI\XeroPHP\Models\Accounting\Items;
+$items->setItems($arr_items);
+
+$result = $apiInstance->createItems($xeroTenantId,$items); 
+//[/Items:CreateMulti]
+		
+		$str = $str . "Create item 1: " . $result->getItems()[0]->getName() . " and Create item 2: " . $result->getItems()[1]->getName() . "<br>" ;
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
 	public function updateItem($xeroTenantId,$apiInstance)
 	{
 		$str = '';
@@ -1170,7 +1429,6 @@ $result = $apiInstance->getLinkedTransactions($xeroTenantId);
 		}
 	}
 
-
 	public function createLinkedTransaction($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -1184,12 +1442,7 @@ $linkedtransaction = new XeroAPI\XeroPHP\Models\Accounting\LinkedTransaction;
 $linkedtransaction->setSourceTransactionID($guid)
 	->setSourceLineItemID($lineitemid);
 
-$linkedtransactions = new XeroAPI\XeroPHP\Models\Accounting\LinkedTransactions;
-$arr_linkedtransactions = [];
-array_push($arr_linkedtransactions, $linkedtransaction);
-$linkedtransactions->setLinkedTransactions($arr_linkedtransactions);
-
-$result = $apiInstance->createLinkedTransaction($xeroTenantId,$linkedtransactions); 	
+$result = $apiInstance->createLinkedTransaction($xeroTenantId,$linkedtransaction); 	
 //[/LinkedTransactions:Create]
 
 		$str = $str . "Created LinkedTransaction ID: " . $result->getLinkedTransactions()[0]->getLinkedTransactionID();
@@ -1200,7 +1453,6 @@ $result = $apiInstance->createLinkedTransaction($xeroTenantId,$linkedtransaction
 			return $str;
 		}
 	}
-
 
 	public function updateLinkedTransaction($xeroTenantId,$apiInstance,$returnObj=false)
 	{
@@ -1287,15 +1539,48 @@ array_push($arr_journallines, $debit);
 $manualjournal->setNarration('MJ from SDK -' . $this->getRandNum())
               ->setJournalLines($arr_journallines);
 
-$manualjournals = new XeroAPI\XeroPHP\Models\Accounting\ManualJournals;
-$arr_manualjournals = [];
-array_push($arr_manualjournals, $manualjournal);
-$manualjournals->setManualJournals($arr_manualjournals);
-
-$result = $apiInstance->createManualJournal($xeroTenantId,$manualjournals); 
+$result = $apiInstance->createManualJournal($xeroTenantId,$manualjournal); 
 //[/ManualJournals:Create]
 		
 		$str = $str . "Create ManualJournal: " . $result->getManualJournals()[0]->getNarration() . "<br>" ;
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function createManualJournals($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$credit = $this->getJournalLineCredit();
+		$debit = $this->getJournalLineDebit();
+
+//[ManualJournals:CreateMulti]
+$arr_journallines = [];
+array_push($arr_journallines, $credit);
+array_push($arr_journallines, $debit);
+
+$arr_manualjournals = [];
+$manualjournal_1 = new XeroAPI\XeroPHP\Models\Accounting\ManualJournal;
+$manualjournal_1->setNarration('MJ from SDK -' . $this->getRandNum())
+              ->setJournalLines($arr_journallines);
+array_push($arr_manualjournals, $manualjournal_1);
+
+$manualjournal_2 = new XeroAPI\XeroPHP\Models\Accounting\ManualJournal;
+$manualjournal_2->setNarration('MJ from SDK -' . $this->getRandNum())
+              ->setJournalLines($arr_journallines);
+array_push($arr_manualjournals, $manualjournal_2);
+
+$manualjournals = new XeroAPI\XeroPHP\Models\Accounting\ManualJournals;
+$manualjournals->setManualJournals($arr_manualjournals);
+
+$result = $apiInstance->createManualJournal($xeroTenantId,$manualjournals); 
+//[/ManualJournals:CreateMulti]
+		
+		$str = $str . "Create ManualJournal 1: " . $result->getManualJournals()[0]->getNarration() . " and Create ManualJournal 2: " . $result->getManualJournals()[1]->getNarration() . "<br>" ;
 		
 		if($returnObj) {
 			return $result;
@@ -1437,7 +1722,45 @@ $allocations->setAllocations($arr_allocation);
 $result = $apiInstance->createOverpaymentAllocation($xeroTenantId,$overpaymentId,$allocations);
 //[/Overpayments:Allocate]
 		
-		//$str = $str . "Allocate Overpayment: " . $overpayment["OverpaymentID"] . "<br>" ;
+		$str = $str . "Allocate Overpayment: " . $result->getAllocations()[0]->getInvoice()->getInvoiceId()  . "<br>" ;
+	
+		return $str;
+	}
+
+	public function allocateOverpayments($xeroTenantId,$apiInstance)
+	{
+		$str = '';
+
+		$invNew = $this->createInvoiceAccRec($xeroTenantId,$apiInstance,true);
+		$invoiceId = $invNew->getInvoices()[0]->getInvoiceID();
+		$overpaymentNew = $this->createOverpayment($xeroTenantId,$apiInstance,true);
+		$overpaymentId = $overpaymentNew->getBankTransactions()[0]->getOverpaymentId();
+
+//[Overpayments:AllocateMulti]
+$invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
+$invoice->setInvoiceID($invoiceId);
+
+$arr_allocations = [];	
+
+$allocation_1 = new XeroAPI\XeroPHP\Models\Accounting\Allocation;
+$allocation_1->setInvoice($invoice)
+	->setAmount("1.00")
+	->setDate(new DateTime('2019-12-02'));
+array_push($arr_allocations, $allocation_1);
+
+$allocation_2 = new XeroAPI\XeroPHP\Models\Accounting\Allocation;
+$allocation_2->setInvoice($invoice)
+	->setAmount("1.00")
+	->setDate(new DateTime('2019-12-07'));
+array_push($arr_allocations, $allocation_2);
+
+$allocations = new XeroAPI\XeroPHP\Models\Accounting\Allocations;	
+$allocations->setAllocations($arr_allocations);
+
+$result = $apiInstance->createOverpaymentAllocation($xeroTenantId,$overpaymentId,$allocations);
+//[/Overpayments:AllocateMulti]
+		
+		$str = $str . "Allocate 2 Overpayment to Invoice ID: " . $result->getAllocations()[0]->getInvoice()->getInvoiceId() . "<br>" ;
 	
 		return $str;
 	}
@@ -1488,7 +1811,6 @@ $result = $apiInstance->getPayments($xeroTenantId);
 		}
 	}
 
-
 	public function createPayment($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -1512,6 +1834,51 @@ $payment->setInvoice($invoice)
 
 $result = $apiInstance->createPayment($xeroTenantId,$payment);
 //[/Payments:Create]
+		
+		$str = $str . "Create Payment ID: " . $result->getPayments()[0]->getPaymentID() . "<br>" ;
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function createPayments($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$newInv = $this->createInvoiceAccRec($xeroTenantId,$apiInstance,true);
+		$invoiceId = $newInv->getInvoices()[0]->getInvoiceID();
+		$newAcct = $this->getBankAccount($xeroTenantId,$apiInstance);
+		$accountId = $newAcct->getAccounts()[0]->getAccountId();
+
+//[Payments:CreateMulti]
+$invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
+$invoice->setInvoiceID($invoiceId);
+
+$bankaccount = new XeroAPI\XeroPHP\Models\Accounting\Account;
+$bankaccount->setAccountID($accountId);
+
+$arr_payments = [];
+
+$payment_1 = new XeroAPI\XeroPHP\Models\Accounting\Payment;
+$payment_1->setInvoice($invoice)
+	->setAccount($bankaccount)
+	->setAmount("2.00");
+array_push($arr_payments, $payment_1);
+	
+$payment_2 = new XeroAPI\XeroPHP\Models\Accounting\Payment;
+$payment_2->setInvoice($invoice)
+	->setAccount($bankaccount)
+	->setAmount("2.00");
+array_push($arr_payments, $payment_2);
+			
+$payments = new XeroAPI\XeroPHP\Models\Accounting\Payments;
+$payments->setPayments($arr_payments);
+
+$result = $apiInstance->createPayment($xeroTenantId,$payments);
+//[/Payments:CreateMulti]
 		
 		$str = $str . "Create Payment ID: " . $result->getPayments()[0]->getPaymentID() . "<br>" ;
 		
@@ -1689,7 +2056,6 @@ $result = $apiInstance->getPurchaseOrders($xeroTenantId);
 		}
 	}
 
-
 	public function createPurchaseOrder($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -1722,6 +2088,48 @@ $result = $apiInstance->createPurchaseOrder($xeroTenantId,$purchaseorder);
 		}
 	}
 
+	public function createPurchaseOrders($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$lineitem = $this->getLineItemForPurchaseOrder($xeroTenantId,$apiInstance);
+		$lineitems = [];		
+		array_push($lineitems, $lineitem);
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+
+//[PurchaseOrders:CreateMulti]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactId($contactId);
+
+$arr_purchaseorders = [];	
+$purchaseorder_1 = new XeroAPI\XeroPHP\Models\Accounting\PurchaseOrder;
+$purchaseorder_1->setReference('Ref original -' . $this->getRandNum())
+	->setContact($contact)
+	->setLineItems($lineitems);
+array_push($arr_purchaseorders, $purchaseorder_1);
+
+$purchaseorder_2 = new XeroAPI\XeroPHP\Models\Accounting\PurchaseOrder;
+$purchaseorder_2->setReference('Ref original -' . $this->getRandNum())
+	->setContact($contact)
+	->setLineItems($lineitems);
+array_push($arr_purchaseorders, $purchaseorder_2);
+		
+$mypurchaseorders = new XeroAPI\XeroPHP\Models\Accounting\PurchaseOrders;
+$mypurchaseorders.setPurchaseOrders($arr_purchaseorders);
+
+$result = $apiInstance->createPurchaseOrders($xeroTenantId,$purchaseorders);
+//[/PurchaseOrders:CreateMulti]
+		
+		$str = $str . "Created PurchaseOrder Number: " . $result->getPurchaseOrders()[0]->getPurchaseOrderNumber() . " and Created PurchaseOrder Number: " . $result->getPurchaseOrders()[0]->getPurchaseOrderNumber() . "<br>" ;
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
 
 	public function updatePurchaseOrder($xeroTenantId,$apiInstance)
 	{
@@ -2009,7 +2417,7 @@ $result = $apiInstance->getTaxRates($xeroTenantId);
 		}
 	}
 
-	public function createTaxRate($xeroTenantId,$apiInstance,$returnObj=false)
+	public function createTaxRates($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
 
@@ -2025,7 +2433,7 @@ $taxrate = new XeroAPI\XeroPHP\Models\Accounting\TaxRate;
 $taxrate->setName('Rate -' . $this->getRandNum())
         ->setTaxComponents($arr_taxcomponent);
 
-$result = $apiInstance->createTaxRate($xeroTenantId,$taxrate); 
+$result = $apiInstance->createTaxRates($xeroTenantId,$taxrate); 
 //[/TaxRates:Create]
 		
 		$str = $str . "Create TaxRate: " . $result->getTaxRates()[0]->getName() . "<br>" ;
@@ -2041,7 +2449,7 @@ $result = $apiInstance->createTaxRate($xeroTenantId,$taxrate);
 	{
 		$str = '';
 	
-		$newTaxRate = $this->createTaxRate($xeroTenantId,$apiInstance,true);
+		$newTaxRate = $this->createTaxRates($xeroTenantId,$apiInstance,true);
 		$taxName = $newTaxRate->getTaxRates()[0]->getName();
 
 //[TaxRates:Update]
