@@ -1,7 +1,5 @@
 # Xero PHP oAuth 2 App
-This PHP project demonstrates how to use the Xero-php-oauth2 SDK.  Clone this repository to your local machine to begin.
-
-This is a project is for use with xero-php-oauth2 SDK. This app demonstrates the functionality of Xero accounting API endpoints and their related actions. 
+This PHP project demonstrates how to use the xero-php-oauth2 SDK.  Use composer or clone this repository to your local machine to begin.
 
 You'll be able to connect to a Xero Organisation, make real API calls. The code used to make each API call will be displayed along with the results returned from Xero's API.
 
@@ -9,44 +7,58 @@ You'll be able to connect to a Xero Organisation, make real API calls. The code 
 To run locally, you'll need a local web server with PHP support.  
 * MAMP is a good option [Download MAMP](https://www.mamp.info/en/downloads/) 
 
-Follow these steps
-* Clone this repo into your webroot. Look in your MAMP folder for `htdocs`
+### Download Manually
+* Clone this repo into your local server webroot. 
 * Launch a terminal app and change to the newly cloned folder `xero-php-oauth2-app`
-* Download dependencies with Composer.
+* Download dependencies with Composer using the folloing comman
 
-`composer install`
-
-New to Composer? You'll want to [install Composer](https://getcomposer.org/doc/00-intro.md)
+```
+composer install
+```
 
 ## Create a Xero App
 To obtain your API keys, follow these steps and create a Xero app
 
 * Create a [free Xero user account](https://www.xero.com/us/signup/api/) (if you don't have one)
 * Login to [Xero developer center](https://developer.xero.com/myapps)
-* Click "Try oAuth2" link
+* Click "New App" link
 * Enter your App name, company url, privacy policy url.
-* Enter the redirect URI (this is your callback url - localhost, etc)
+* Enter the redirect URI (your callback url - i.e. `http://localhost:8888/xero-php-oauth2-app/callback.php`)
 * Agree to terms and condition and click "Create App".
 * Click "Generate a secret" button.
 * Copy your client id and client secret and save for use later.
 * Click the "Save" button. You secret is now hidden.
 
-## Add your API keys to this app
-You'll need to set the *clientId, clientSecret and redirectUri* in the following files
+## Configure your .env file
+You'll need to setup your  `.env` file
 
-* authorization.php
-* callback.php
-* get.php.
+Rename the file `sample.env` to `.env` and copy and paste your *clientId, clientSecret and redirectUri*  These .env variables will be read by authorization.php, callback.php, get.php.
 
+Sample.env file
+```bash
+CLIENT_ID = "YOUR-CLIENT-ID"
+CLIENT_SECRET = "YOUR-CLIENT-SECRET"
+REDIRECT_URI = "http://localhost:8888/xero-php-oauth2-app/callback.php"
+```
+
+Sample PHP code from authorization.php
 ```php
-	$provider = new \League\OAuth2\Client\Provider\GenericProvider([
-        'clientId'                => '__YOUR_CLIENT_ID__',   
-        'clientSecret'            => '__YOUR_CLIENT_SECRET__',
-        'redirectUri'             => 'http://localhost:8888/xero-php-oauth2-app/callback.php',
-	    'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
-	    'urlAccessToken'          => 'https://identity.xero.com/connect/token',
-	    'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
-	]);
+// This library will read variable from the .env file.
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+$clientId = getenv('CLIENT_ID');
+$clientSecret = getenv('CLIENT_SECRET');
+$redirectUri = getenv('REDIRECT_URI');
+
+$provider = new \League\OAuth2\Client\Provider\GenericProvider([
+	'clientId'                => $clientId,   
+	'clientSecret'            => $clientSecret,
+	'redirectUri'             => $redirectUri,
+	'urlAuthorize'            => 'https://login.xero.com/identity/connect/authorize',
+	'urlAccessToken'          => 'https://identity.xero.com/connect/token',
+	'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
+]);
+
 ```
 
 ## License
