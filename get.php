@@ -139,10 +139,7 @@
 			    case "BankTransactions":
 				    switch($action)
 					{
-				    	case "Create":
-				        print_r($ex->createBankTransaction($xeroTenantId,$apiInstance));
-						break;
-						case "CreateMulti":
+						case "Create":
 						print_r($ex->createBankTransactions($xeroTenantId,$apiInstance));
 						break;
 				        case "Read":
@@ -187,10 +184,7 @@
 				 case "Contacts":
 				    switch($action)
 					{
-				    	case "Create":
-				        echo $ex->createContact($xeroTenantId,$apiInstance);
-						break;
-						case "CreateMulti":
+						case "Create":
 						echo $ex->createContacts($xeroTenantId,$apiInstance);
 						break;
 				        case "Read":
@@ -236,10 +230,7 @@
 				 case "CreditNotes":
 				    switch($action)
 					{
-				    	case "Create":
-				        echo $ex->createCreditNote($xeroTenantId,$apiInstance);
-						break;
-						case "CreateMulti":
+						case "Create":
 						echo $ex->createCreditNotes($xeroTenantId,$apiInstance);
 						break;
 				        case "Read":
@@ -282,10 +273,7 @@
 				 case "Employees":
 				    switch($action)
 					{
-				    	case "Create":
-				        echo $ex->createEmployee($xeroTenantId,$apiInstance);
-						break;
-						case "CreateMulti":
+						case "Create":
 						echo $ex->createEmployees($xeroTenantId,$apiInstance);
 						break;
 				        case "Read":
@@ -320,10 +308,7 @@
 				 case "Invoices":
 				    switch($action)
 					{
-				    	case "Create":
-				        echo $ex->createInvoice($xeroTenantId,$apiInstance);
-						break;
-						case "CreateMulti":
+						case "Create":
 						echo $ex->createInvoices($xeroTenantId,$apiInstance);
 						break;
 				        case "Read":
@@ -358,9 +343,6 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createItem($xeroTenantId,$apiInstance);
-						break;
-						case "CreateMulti":
 						echo $ex->createItems($xeroTenantId,$apiInstance);
 						break;
 				        case "Read":
@@ -412,9 +394,6 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createManualJournal($xeroTenantId,$apiInstance);
-						break;
-						case "CreateMulti":
 						echo $ex->createManualJournals($xeroTenantId,$apiInstance);
 						break;
 				        case "Read":
@@ -449,9 +428,6 @@
 				        echo $ex->createOverpayment($xeroTenantId,$apiInstance);
 				        break;
 				        case "Allocate":
-				        echo $ex->allocateOverpayment($xeroTenantId,$apiInstance);
-						break;
-						case "AllocateMulti":
 						echo $ex->allocateOverpayments($xeroTenantId,$apiInstance);
 						break;
 				    	case "Refund":
@@ -506,9 +482,6 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createPurchaseOrder($xeroTenantId,$apiInstance);
-						break;
-						case "CreateMulti":
 						echo $ex->createPurchaseOrders($xeroTenantId,$apiInstance);
 						break;
 				        case "Read":
