@@ -39,12 +39,10 @@
                 'code' => $_GET['code']
             ]);
           
-            $jwt = new XeroAPI\XeroPHP\JWTClaims(
-                $accessToken->getValues()["id_token"]
-             );
- 
-             $jwt->decode();
-             echo $jwt->getGivenName();
+            $jwt = new XeroAPI\XeroPHP\JWTClaims();
+            $jwt->setTokenId($accessToken->getValues()["id_token"]);
+            $jwt->decode();
+            echo $jwt->getGivenName();
 
             $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$accessToken->getToken() );
             $config->setHost("https://api.xero.com"); 
