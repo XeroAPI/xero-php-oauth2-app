@@ -1,4 +1,7 @@
 <?php
+// Use this class to deserialize error caught
+use XeroAPI\XeroPHP\AccountingObjectSerializer;
+
 class ExampleClass
 {
 	public $apiInstance;
@@ -10,40 +13,69 @@ class ExampleClass
 		$apiInstance = $arg;
    	}
 
-	public function getAccount($xeroTenantId,$apiInstance,$returnObj=false)
-	{
 
+/*
+IDENTITY APIs
+Following methods demonstrate Xero's 
+Accounting API endpoints
+https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/accounting-yaml/xero_accounting.yaml 
+*/
+	public function deleteConnection($xeroTenantId,$identityApi,$returnObj=false)
+	{
 		$str = '';
-//[Accounts:Read]
-// READ ALL 
-$result = $apiInstance->getAccounts($xeroTenantId); 						
-// READ only ACTIVE
-$where = 'Status=="ACTIVE"';
-$result2 = $apiInstance->getAccounts($xeroTenantId, null, $where); 
-//[/Accounts:Read]
+		
+
+//[Connection:Delete]
+$connections = $identityApi->getConnections();
+$id = $connections[0]->getId();
+$result = $identityApi->deleteConnection($id);
+//[/Connection:Delete]
 
 		if($returnObj) {
 			return $result;
 		} else {
-			$str = $str . "Get accounts total: " . count($result->getAccounts()) . "<br>";
-			$str = $str . "Get ACTIVE accounts total: " . count($result2->getAccounts()) . "<br>";
+			$str = $str . "Organisation connection  deleted<br>";
 			return $str;
 		}
-		
+	}
+
+/*
+ACCOUNTING APIs
+Following methods demonstrate Xero's 
+Accounting API endpoints
+https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/accounting-yaml/xero_accounting.yaml 
+*/
+   public function getAccount($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$where = 'Status=="ACTIVE"';
+		$accounts = $apiInstance->getAccounts($xeroTenantId, null, $where); 
+		$accountId = $accounts->getAccounts()[0]->getAccountId();
+//[Account:Read]
+$result = $apiInstance->getAccount($xeroTenantId,$accountId); 						
+//[/Account:Read]
+
+		if($returnObj) {
+			return $result;
+		} else {
+			$str = $str . "Get specific Account: " . $result->getAccounts()[0]->getName() . "<br>";
+			return $str;
+		}
 	}
 
 	public function createAccount($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
 
-//[Accounts:Create]
+//[Account:Create]
 $account = new XeroAPI\XeroPHP\Models\Accounting\Account;
 $account->setCode($this->getRandNum());
 $account->setName("Foo" . $this->getRandNum());
 $account->setType("EXPENSE");
 $account->setDescription("Hello World");	
 $result = $apiInstance->createAccount($xeroTenantId,$account); 
-//[/Accounts:Create]
+//[/Account:Create]
 		
 		$str = $str ."Create Account: " . $result->getAccounts()[0]->getName() . "<br>";
 		if($returnObj) {
@@ -58,14 +90,14 @@ $result = $apiInstance->createAccount($xeroTenantId,$account);
 		$str = '';
 
 		$new = $this->createAccount($xeroTenantId,$apiInstance,true);
-		$guid = $new->getAccounts()[0]->getAccountId();								
+		$accountId = $new->getAccounts()[0]->getAccountId();								
 					
-//[Accounts:Update]
+//[Account:Update]
 $account = new XeroAPI\XeroPHP\Models\Accounting\Account;
 $account->setStatus(NULL);
 $account->setDescription("Goodbye World");	
-$result = $apiInstance->updateAccount($xeroTenantId,$guid,$account);  
-//[/Accounts:Update]
+$result = $apiInstance->updateAccount($xeroTenantId,$accountId,$account);  
+//[/Account:Update]
 
 		$str = $str . "Update Account: " . $result->getAccounts()[0]->getName() . "<br>" ;
 
@@ -77,13 +109,13 @@ $result = $apiInstance->updateAccount($xeroTenantId,$guid,$account);
 		$str = '';
 
 		$new = $this->createAccount($xeroTenantId,$apiInstance,true);
-		$guid = $new->getAccounts()[0]->getAccountId();								
+		$accountId = $new->getAccounts()[0]->getAccountId();								
 		
-//[Accounts:Archive]
+//[Account:Archive]
 $account = new XeroAPI\XeroPHP\Models\Accounting\Account;
 $account->setStatus("ARCHIVED");	
-$result = $apiInstance->updateAccount($xeroTenantId,$guid,$account);  
-//[/Accounts:Archive]
+$result = $apiInstance->updateAccount($xeroTenantId,$accountId,$account);  
+//[/Account:Archive]
 
 		$str = $str . "Archive Account: " . $result->getAccounts()[0]->getName() . "<br>" ;
 
@@ -95,11 +127,11 @@ $result = $apiInstance->updateAccount($xeroTenantId,$guid,$account);
 		$str = '';
 
 		$new = $this->createAccount($xeroTenantId,$apiInstance,true);
-		$guid = $new->getAccounts()[0]->getAccountId();								
+		$accountId = $new->getAccounts()[0]->getAccountId();								
 		 				
-//[Accounts:Delete]
-$result = $apiInstance->deleteAccount($xeroTenantId,$guid);
-//[/Accounts:Delete]
+//[Account:Delete]
+$result = $apiInstance->deleteAccount($xeroTenantId,$accountId);
+//[/Account:Delete]
 
 		$str = $str . "Deleted Account: " . $result->getAccounts()[0]->getName() . "<br>" ;
 		return $str;
@@ -110,8 +142,8 @@ $result = $apiInstance->deleteAccount($xeroTenantId,$guid);
 	{
 		$str = '';
 
-		$account = $this->getAccount($xeroTenantId,$apiInstance,true);
-//[Accounts:Attachment]
+		$account = $this->getAccounts($xeroTenantId,$apiInstance,true);
+//[Account:Attachment]
 $guid = $account->getAccounts()[2]->getAccountId();
 		
 $filename = "./helo-heros.jpg";
@@ -120,21 +152,143 @@ $contents = fread($handle, filesize($filename));
 fclose($handle);
 
 $result = $apiInstance->createAccountAttachmentByFileName($xeroTenantId,$guid,"helo-heros.jpg",$contents);
-//[/Accounts:Attachment]
+//[/Account:Attachment]
 		$str =  "Account (". $result->getAttachments()[0]->getFileName() .") attachment url:";
 		$str = $str . $result->getAttachments()[0]->getUrl();
 
 		return $str;
 	}
 
+	public function getAccountAttachmentById($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+		// Create new attachment on an account
+		$account = $this->getAccounts($xeroTenantId,$apiInstance,true);
+		$accountId = $account->getAccounts()[0]->getAccountId();
+		$filename = "./helo-heros.jpg";
+		$handle = fopen($filename, "r");
+		$contents = fread($handle, filesize($filename));
+		fclose($handle);
+		$new = $apiInstance->createAccountAttachmentByFileName($xeroTenantId,$accountId,"helo-heros.jpg",$contents);
+		
+		// Get attachments list
+		$attachments = $apiInstance->getAccountAttachments($xeroTenantId,$accountId); 			
+		$attachmentId = $attachments->getAttachments()[0]->getAttachmentId();
+		$contentType = $attachments->getAttachments()[0]->getMimeType();
+		$savedFileName = $attachments->getAttachments()[0]->getFileName();
+		
+//[Account:AttachmentById]
+
+// get a specific attachment for this account
+$result = $apiInstance->getAccountAttachmentById($xeroTenantId, $accountId, $attachmentId,$contentType); 
+
+// read attachment contents
+$content = $result->fread($result->getSize());
+
+//check if a temp dir exsits
+$dir_to_save = "./temp/";
+if (!is_dir($dir_to_save)) {
+  mkdir($dir_to_save);
+}
+// write to temp dir
+file_put_contents($dir_to_save . $savedFileName , $content);
+//[/Account:AttachmentById]
+		
+		$str = $str . "Account attachment saved: " . $savedFileName . " in the temp folder<br>";
+
+		if($returnObj) {
+			return $result->getInvoices()[0];
+		} else {
+			return $str;
+		}
+	}	
+
+	public function getAccounts($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+//[Accounts:Read]
+// read all
+$result = $apiInstance->getAccounts($xeroTenantId); 						
+
+// filter for only active
+$where = 'Status=="ACTIVE"';
+$result2 = $apiInstance->getAccounts($xeroTenantId, null, $where); 
+//[/Accounts:Read]
+
+		if($returnObj) {
+			return $result;
+		} else {
+			$str = $str . "Get accounts total: " . count($result->getAccounts()) . "<br>";
+			$str = $str . "Get ACTIVE accounts total: " . count($result2->getAccounts()) . "<br>";
+			return $str;
+		}
+	}
 
 	public function getBankTransaction($xeroTenantId,$apiInstance)
 	{	
 		$str = '';
+		$new = $this->createBankTransactions($xeroTenantId,$apiInstance,true);
+		$banktransactionId = $new->getBankTransactions()[0]->getBankTransactionId();
+
+//[BankTransaction:Read]
+$result = $apiInstance->getBankTransactions($xeroTenantId, $banktransactionId); 						
+//[/BankTransaction:Read]
+
+		$str = $str . "Get specific BankTransaction Total: " . $result->getBankTransactions()[0]->getTotal() . "<br>";	
+		return $str;
+	}
+
+	public function updateBankTransaction($xeroTenantId,$apiInstance)
+	{
+		$str = '';
+
+		$new = $this->createBankTransactions($xeroTenantId,$apiInstance,true);
+		$banktransactionId = $new->getBankTransactions()[0]->getBankTransactionId();
+
+//[BankTransaction:Update]
+$banktransaction = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
+$banktransaction->setReference("Goodbye World");
+$result = $apiInstance->updateBankTransaction($xeroTenantId,$banktransactionId,$banktransaction);
+//[/BankTransaction:Update]
+
+		$str = $str . "Updated Bank Transaction: " . $result->getBankTransactions()[0]->getReference();
+
+		return $str;
+	}
+
+	public function deleteBankTransaction($xeroTenantId,$apiInstance)
+	{
+		$account = $this->getBankAccount($xeroTenantId,$apiInstance,true);
+
+		if (count((array)$account)) {
+			$str = '';
+			
+			$new = $this->createBankTransactions($xeroTenantId,$apiInstance,true);
+			$banktransactionId = $new->getBankTransactions()[0]->getBankTransactionId();
+
+//[BankTransaction:Delete]
+$banktransaction = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
+$banktransaction->setStatus(XeroAPI\XeroPHP\Models\Accounting\BankTransaction::STATUS_DELETED);
+$result = $apiInstance->updateBankTransaction($xeroTenantId,$banktransactionId,$banktransaction);  
+//[/BankTransaction:Delete]
+
+			$str = $str . "Deleted Bank Transaction";
+
+		} else {
+			$str = $str . "No Bank Account Found - can't work with Transactions without it.";
+		}
+	
+		return $str;
+	}
+
+	public function getBankTransactions($xeroTenantId,$apiInstance)
+	{	
+		$str = '';
 //[BankTransactions:Read]
-// READ ALL
+// read all bank transactions
 $result = $apiInstance->getBankTransactions($xeroTenantId); 						
-// READ only ACTIVE
+
+// filter for only authorised bank transactions
 $where = 'Status=="AUTHORISED"';
 $result2 = $apiInstance->getBankTransactions($xeroTenantId, null, $where); 
 //[/BankTransactions:Read]
@@ -206,47 +360,61 @@ $result = $apiInstance->createBankTransactions($xeroTenantId, $banktransactions)
 		}
 	}
 
-	public function updateBankTransaction($xeroTenantId,$apiInstance)
+	public function updateOrCreateBankTransactions($xeroTenantId,$apiInstance)
 	{
 		$str = '';
 
 		$new = $this->createBankTransactions($xeroTenantId,$apiInstance,true);
 		$banktransactionId = $new->getBankTransactions()[0]->getBankTransactionId();
+		
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+		$getAccount = $this->getBankAccount($xeroTenantId,$apiInstance,true);
+		$code = $getAccount->getAccounts()[0]->getCode();
+		$accountId = $getAccount->getAccounts()[0]->getAccountId();
+		$lineitem = $this->getLineItem();
+		$lineitems = [];		
+		array_push($lineitems, $lineitem);
 
-//[BankTransactions:Update]
+		$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+		$contact->setContactId($contactId);
+
+		$bankAccount = new XeroAPI\XeroPHP\Models\Accounting\Account;
+		$bankAccount->setCode($code)
+					->setAccountId($accountId);
+
+		$lineitems = [];		
+		array_push($lineitems, $lineitem);
+
+//[BankTransactions:UpdateOrCreate]
+$arr_banktransactions = [];	
+
+// Create a new bank transaction
+$banktransaction_1 = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
+$banktransaction_1->setReference('Ref-' . $this->getRandNum())
+	->setDate(new DateTime('2019-12-02'))
+	->setLineItems($lineitems)
+	->setType("RECEIVE")
+	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE)
+	->setBankAccount($bankAccount)
+	->setContact($contact);
+array_push($arr_banktransactions, $banktransaction_1);
+
+// Update an existing transaction
 $banktransaction = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
 $banktransaction->setReference("Goodbye World");
-$result = $apiInstance->updateBankTransaction($xeroTenantId,$banktransactionId,$banktransaction);
-//[/BankTransactions:Update]
+$banktransaction->setBankTransactionId($banktransactionId);
 
-		$str = $str . "Updated Bank Transaction: " . $result->getBankTransactions()[0]->getReference();
+array_push($arr_banktransactions, $banktransaction);
 
-		return $str;
-	}
+$banktransactions = new XeroAPI\XeroPHP\Models\Accounting\BankTransactions;
+$banktransactions->setBankTransactions($arr_banktransactions);
 
+$result = $apiInstance->updateOrCreateBankTransactions($xeroTenantId,$banktransactions, false, null);
+//[/BankTransactions:UpdateOrCreate]
 
-	public function deleteBankTransaction($xeroTenantId,$apiInstance)
-	{
-		$account = $this->getBankAccount($xeroTenantId,$apiInstance,true);
+		$str = $str . "New Bank Transaction: " . $result->getBankTransactions()[0]->getReference() . "<br>Updated Bank Transaction: " . $result->getBankTransactions()[1]->getReference() . "<br>"; 
 
-		if (count((array)$account)) {
-			$str = '';
-			
-			$new = $this->createBankTransactions($xeroTenantId,$apiInstance,true);
-			$banktransactionId = $new->getBankTransactions()[0]->getBankTransactionId();
-
-//[BankTransactions:Delete]
-$banktransaction = new XeroAPI\XeroPHP\Models\Accounting\BankTransaction;
-$banktransaction->setStatus(XeroAPI\XeroPHP\Models\Accounting\BankTransaction::STATUS_DELETED);
-$result = $apiInstance->updateBankTransaction($xeroTenantId,$banktransactionId,$banktransaction);  
-//[/BankTransactions:Delete]
-
-			$str = $str . "Deleted Bank Transaction";
-
-		} else {
-			$str = $str . "No Bank Account Found - can't work with Transactions without it.";
-		}
-	
 		return $str;
 	}
 
@@ -263,7 +431,6 @@ $result = $apiInstance->getBankTransfers($xeroTenantId);
 	
 		return $str;
 	}
-
 
 	public function createBankTransfer($xeroTenantId,$apiInstance)
 	{
@@ -315,15 +482,71 @@ $result = $apiInstance->getBrandingThemes($xeroTenantId);
 		return $str;
 	}
 
+
 	public function getContact($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
 
+		$new = $this->createContacts($xeroTenantId,$apiInstance, true); 
+		$contactId = $new->getContacts()[0]->getContactId();
+//[Contact:Read]
+$result = $apiInstance->getContacts($xeroTenantId, $contactId);
+//[/Contact:Read]
+
+		$str = $str . "Get specific Contact name: " . $result->getContacts()[0]->getName() . "<br>";
+
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function updateContact($xeroTenantId,$apiInstance)
+	{
+		$str = '';
+		
+		$new = $this->createContacts($xeroTenantId,$apiInstance,true);
+		$contactId = $new->getContacts()[0]->getContactId();								
+					
+//[Contact:Update]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setName("Goodbye" . $this->getRandNum());	
+$result = $apiInstance->updateContact($xeroTenantId,$contactId,$contact);  
+//[/Contact:Update]
+
+		$str = $str . "Update Contacts: " . $result->getContacts()[0]->getName() . "<br>" ;
+
+		return $str;
+	}
+	
+	public function archiveContact($xeroTenantId,$apiInstance)
+	{
+		$str = '';
+
+		$new = $this->createContacts($xeroTenantId,$apiInstance,true);
+		$contactId = $new->getContacts()[0]->getContactId();								
+					
+//[Contact:Archive]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactStatus(\XeroAPI\XeroPHP\Models\Accounting\Contact::CONTACT_STATUS_ARCHIVED);	
+$result = $apiInstance->updateContact($xeroTenantId,$contactId,$contact);  
+//[/Contact:Archive]
+
+		$str = $str . "Archive Contacts: " . $result->getContacts()[0]->getName() . "<br>" ;
+
+		return $str;
+	}
+
+	public function getContacts($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
 //[Contacts:Read]
-// READ ALL 
+// read all contacts 
 $result = $apiInstance->getContacts($xeroTenantId); 		
 
-// READ only ACTIVE
+// filter by contacts by status
 $where = 'ContactStatus=="ACTIVE"';
 $result2 = $apiInstance->getContacts($xeroTenantId, null, $where); 
 //[/Contacts:Read]
@@ -336,10 +559,7 @@ $result2 = $apiInstance->getContacts($xeroTenantId, null, $where);
 		} else {
 			return $str;
 		}
-		
 	}
-
-	
 
 	public function createContacts($xeroTenantId,$apiInstance,$returnObj=false)
 	{
@@ -377,42 +597,38 @@ $result = $apiInstance->createContacts($xeroTenantId,$contacts);
 		}	
 	}
 	
-	public function updateContact($xeroTenantId,$apiInstance)
+	public function updateOrCreateContacts($xeroTenantId,$apiInstance)
 	{
 		$str = '';
 		
 		$new = $this->createContacts($xeroTenantId,$apiInstance,true);
 		$contactId = $new->getContacts()[0]->getContactId();								
 					
-//[Contacts:Update]
-$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-$contact->setName("Goodbye" . $this->getRandNum());	
-$result = $apiInstance->updateContact($xeroTenantId,$contactId,$contact);  
-//[/Contacts:Update]
+//[Contacts:UpdateOrCreate]
+$arr_contacts = [];	
 
-		$str = $str . "Update Contacts: " . $result->getContacts()[0]->getName() . "<br>" ;
-
-		return $str;
-	}
+$contact_1 = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact_1->setName('FooBar' . $this->getRandNum())
+	->setFirstName("Foo" . $this->getRandNum())
+	->setLastName("Bar" . $this->getRandNum())
+	->setEmailAddress("ben.bowden@24locks.com");
+array_push($arr_contacts, $contact_1);
 	
-	public function archiveContact($xeroTenantId,$apiInstance)
-	{
-		$str = '';
+$contact_2 = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact_2->setName("Goodbye" . $this->getRandNum())
+		  ->setContactId($contactId);	
+array_push($arr_contacts, $contact_2);
 
-		$new = $this->createContacts($xeroTenantId,$apiInstance,true);
-		$contactId = $new->getContacts()[0]->getContactId();								
-					
-//[Contacts:Archive]
-$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
-$contact->setContactStatus(\XeroAPI\XeroPHP\Models\Accounting\Contact::CONTACT_STATUS_ARCHIVED);	
-$result = $apiInstance->updateContact($xeroTenantId,$contactId,$contact);  
-//[/Contacts:Archive]
+$contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
+$contacts->setContacts($arr_contacts);
 
-		$str = $str . "Archive Contacts: " . $result->getContacts()[0]->getName() . "<br>" ;
+$result = $apiInstance->updateOrCreateContacts($xeroTenantId,$contacts,false);  
+//[/Contacts:UpdateOrCreate]
+
+		$str = $str . "New Contact: " . $result->getContacts()[0]->getName() . "<br>" . "Updated Contacts: " . $result->getContacts()[1]->getName() . "<br>" ;
 
 		return $str;
 	}
-
 
 	public function getContactGroup($xeroTenantId,$apiInstance,$returnObj=false)
 	{
@@ -431,7 +647,6 @@ $result = $apiInstance->getContactGroups($xeroTenantId);
 		}
 	}
 
-
 	public function createContactGroup($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -447,9 +662,14 @@ array_push($contacts, $contact);
 
 $contactgroup = new XeroAPI\XeroPHP\Models\Accounting\ContactGroup;
 $contactgroup->setName('Rebels-' . $this->getRandNum())
-	->setContacts($contacts);
+             ->setContacts($contacts);
 
-$result = $apiInstance->createContactGroup($xeroTenantId,$contactgroup); 
+try {
+	$result = $apiInstance->createContactGroup($xeroTenantId,$contactgroup); 
+} catch (\XeroAPI\XeroPHP\ApiException $e) {
+	$error = AccountingObjectSerializer::deserialize($e->getResponseBody(), '\XeroAPI\XeroPHP\Models\Accounting\Error',[]);
+	$str = "ApiException - " . $error->getElements()[0]["validation_errors"][0]["message"];
+}
 //[/ContactGroups:Create]
 
 		$str = $str ."Create ContactGroups: " . $result->getContactGroups()[0]->getName() . "<br>";
@@ -486,7 +706,10 @@ $result = $apiInstance->updateContactGroup($xeroTenantId,$contactgroupId,$contac
 	{
 		$str = '';		
 
-		$new = $this->createContactGroup($xeroTenantId,$apiInstance,true);
+		$new = $this->getContactGroup($xeroTenantId,$apiInstance,true);
+
+if (count($new->getContactGroups()) > 0) {
+
 		$contactgroupId = $new->getContactGroups()[0]->getContactGroupID();
 
 //[ContactGroups:Archive]
@@ -495,7 +718,10 @@ $contactgroup->setStatus(XeroAPI\XeroPHP\Models\Accounting\ContactGroup::STATUS_
 $result = $apiInstance->updateContactGroup($xeroTenantId,$contactgroupId,$contactgroup);  
 //[/ContactGroups:Archive]
 		
-		$str = $str . "Set Status to DELETE for ContactGroup: " . $new->getContactGroups()[0]->getName() . "<br>" ;
+	$str = $str . "Set Status to DELETE for ContactGroup: " . $new->getContactGroups()[0]->getName() . "<br>" ;
+} else {
+	$str = $str . "No Contact Groups exist - create one before trying to archive";
+}
 
 		if($returnObj) {
 			return $result;
@@ -537,14 +763,28 @@ $result = $apiInstance->createContactGroupContacts($xeroTenantId,$contactgroupId
 	{
 		$str = '';		
 
-		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
-		$contactId = $getContact->getContacts()[0]->getContactId();
-		$getContactGroup = $this->getContactGroup($xeroTenantId,$apiInstance,true);
-		$contactgroupId = $getContactGroup->getContactGroups()[0]->getContactGroupID();
+		// Get a Contact
+		$new = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $new->getContacts()[0]->getContactId();
 
-//[ContactGroups:Remove]
+		// Get a Contact Group
+		$newContactGroup = $this->getContactGroup($xeroTenantId,$apiInstance,true);
+		$contactgroupId = $newContactGroup->getContactGroups()[0]->getContactGroupId();
+
+		// Add that contact to the contact group
+		$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+		$contact->setContactID($contactId);
+		$arr_contacts = [];		
+		array_push($arr_contacts, $contact);
+		$contacts = new XeroAPI\XeroPHP\Models\Accounting\Contacts;
+		$contacts->setContacts($arr_contacts);
+
+		$contactAddedToGroup = $apiInstance->createContactGroupContacts($xeroTenantId,$contactgroupId,$contacts); 
+
+
+//[ContactGroups:RemoveContact]
 $result = $apiInstance->deleteContactGroupContact($xeroTenantId,$contactgroupId,$contactId);  
-//[/ContactGroups:Remove]
+//[/ContactGroups:RemoveContact]
 
 		$str = $str . "Deleted Contact from Group<br>" ;
 
@@ -688,6 +928,9 @@ $allocation->setInvoice($invoice)
 	->setDate(new DateTime('2019-09-02'));
 
 $result = $apiInstance->createCreditNoteAllocation($xeroTenantId,$creditnoteId,$allocation); 
+
+$result2 = $apiInstance->getInvoice($xeroTenantId,$invoiceId); 
+var_dump( $result2->getInvoices()[0]->getCreditNotes()[0]->getAppliedAmount());
 //[/CreditNotes:Allocate]
 
 		$str = $str . "Allocate amount: " . $result->getAllocations()[0]->getAmount() . "<br>" ;
@@ -773,8 +1016,8 @@ $result = $apiInstance->getCurrencies($xeroTenantId);
 
 //[Currencies:Create]
 $currency = new XeroAPI\XeroPHP\Models\Accounting\Currency;
-$currency->setCode(XeroAPI\XeroPHP\Models\Accounting\CurrencyCode::CAD)
-		 ->setDescription("Canadian Dollar");
+$currency->setCode(XeroAPI\XeroPHP\Models\Accounting\CurrencyCode::NZD)
+		 ->setDescription("New Zealand Dollar");
 		
 $result = $apiInstance->createCurrency($xeroTenantId,$currency); 		
 //[/Currencies:Create]
@@ -786,7 +1029,6 @@ $result = $apiInstance->createCurrency($xeroTenantId,$currency);
 		} else {
 			return $str;
 		}
-		
 	}	
 
 	public function getEmployee($xeroTenantId,$apiInstance,$returnObj=false)
@@ -993,6 +1235,37 @@ $result2 = $apiInstance->getInvoices($xeroTenantId, null, $where);
 		}
 	}	
 
+	public function getInvoiceAsPdf($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+//[Invoices:Readpdf]
+// READ ALL 
+$invoices = $apiInstance->getInvoices($xeroTenantId); 						
+$invoiceId = $invoices->getInvoices()[0]->getInvoiceId();
+$result = $apiInstance->getInvoiceAsPdf($xeroTenantId, $invoiceId, "application/pdf"); 						
+
+// read PDF contents
+$content = $result->fread($result->getSize());
+
+//check if a temp dir exsits
+$dir_to_save = "./temp/";
+if (!is_dir($dir_to_save)) {
+  mkdir($dir_to_save);
+}
+// write to temp dir
+file_put_contents($dir_to_save . $result->getFileName() . ".pdf", $content);
+//[/Invoices:ReadPdf]
+		
+		$str = $str . "PDF of Invoice name: " . $result->getFileName() . ".pdf" . "<br>";
+
+		if($returnObj) {
+			return $result->getInvoices()[0];
+		} else {
+			return $str;
+		}
+	}	
+
 
 	public function createInvoices($xeroTenantId,$apiInstance,$returnObj=false)
 	{
@@ -1142,6 +1415,26 @@ $result = $apiInstance->getItems($xeroTenantId);
 //[Items:Create]
 $arr_items = [];	
 
+// $purchase = new XeroAPI\XeroPHP\Models\Accounting\Purchase;
+// $purchase->setUnitPrice(17.39130714285714)
+// 	->setTaxType(INPUT)
+// 	->setCOGSAccountCode(310);
+
+// $sales = new XeroAPI\XeroPHP\Models\Accounting\Purchase;
+// $sales->setUnitPrice(24.34783)
+// 	->setTaxType(OUTPUT)
+// 	->setCOGSAccountCode(400);
+
+// $item_1 = new XeroAPI\XeroPHP\Models\Accounting\Item;
+// $item_1->setName("Moisture Mist Balancing Gel Mist")
+// 	->setCode("SKU-198")
+// 	->setDescription("Moisture Mist Balancing Gel Mist Moisture Mist Balancing Gel Mist It can be used under makeup as a pre-makeup base or over makeup for added moisture during the day.\n")
+// 	->setIsTrackedAsInventory(true)
+// 	->setInventoryAssetAccountCode(140)
+// 	->setSalesDetails($sales)
+// 	->setPurchaseDetails($purchase);
+// array_push($arr_items, $item_1);
+
 $item_1 = new XeroAPI\XeroPHP\Models\Accounting\Item;
 $item_1->setName('My Item-' . $this->getRandNum())
 	->setCode($this->getRandNum())
@@ -1159,7 +1452,7 @@ array_push($arr_items, $item_2);
 $items = new XeroAPI\XeroPHP\Models\Accounting\Items;
 $items->setItems($arr_items);
 
-$result = $apiInstance->createItems($xeroTenantId,$items); 
+$result = $apiInstance->createItems($xeroTenantId,$items,true,4); 
 //[/Items:Create]
 		
 		$str = $str . "Create item 1: " . $result->getItems()[0]->getName() . " and Create item 2: " . $result->getItems()[1]->getName() . "<br>" ;
@@ -2346,7 +2639,258 @@ $result = $apiInstance->getUsers($xeroTenantId);
 		}
 	}
 
-	// HELPERS
+/*
+FIXED ASSETS
+following methods for assets endpoints
+
+*/
+
+	public function getAsset($xeroTenantId,$assetsApi,$returnObj=false)
+	{
+		$str = '';
+		$assets = $this->getAssets($xeroTenantId,$assetsApi,true);
+		$assetId = $assets->getItems()[0]->getAssetId();
+//[Asset:Read]
+$result = $assetsApi->getAssetById($xeroTenantId, $assetId); 						
+//[/Asset:Read]
+
+		$str = $str . "Get specific Fixed Asset: " . $result->getAssetName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function createAsset($xeroTenantId,$assetsApi,$returnObj=false)
+	{
+		$str = '';
+		
+//[Asset:Create]
+$asset = new XeroAPI\XeroPHP\Models\Asset\Asset;
+$asset->setAssetName('Computer -' . $this->getRandNum())
+	->setAssetNumber($this->getRandNum())
+	->setPurchaseDate((new DateTime('2019-01-02')))
+	->setPurchasePrice(100.0)
+	->setDisposalPrice(23.23)
+	->setAssetStatus("Draft");
+
+$result = $assetsApi->createAsset($xeroTenantId, $asset); 						
+//[/Asset:Create]
+
+		$str = $str . "Get specific Fixed Asset: " . $result->getAssetName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function updateAsset($xeroTenantId,$assetsApi,$returnObj=false)
+	{
+		$str = '';
+		$new = $this->createAsset($xeroTenantId,$assetsApi,true);
+		$assetId = $new->getAssetId();
+		
+//[Asset:Update]
+$bookDepreciationDetail = new XeroAPI\XeroPHP\Models\Asset\BookDepreciationDetail;
+$asset = new XeroAPI\XeroPHP\Models\Asset\Asset;
+$asset->setAssetName('Latop -' . $this->getRandNum())
+	  ->setAssetNumber($this->getRandNum())
+	  ->setAssetStatus("Draft")
+	  ->setAssetId($assetId);
+$result = $assetsApi->createAsset($xeroTenantId, $asset); 						
+//[/Asset:Update]
+
+		$str = $str . "Get specific Fixed Asset: " . $result->getAssetName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getAssets($xeroTenantId,$assetsApi,$returnObj=false)
+	{
+		$str = '';
+
+//[Assets:Read]
+// read all assets with status of DRAFT
+$result = $assetsApi->getAssets($xeroTenantId,"DRAFT" ); 						
+//[/Assets:Read]
+
+		$str = $str . "Get total Fixed Assets: " . $result->getPagination()->getItemCount() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getAssetTypes($xeroTenantId,$assetsApi,$returnObj=false)
+	{
+		$str = '';
+
+//[AssetTypes:Read]
+$result = $assetsApi->getAssetTypes($xeroTenantId); 						
+//[/AssetTypes:Read]
+
+		$str = $str . "Get total Asset Types: " . count($result) . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function createAssetType($xeroTenantId,$assetsApi,$apiInstance, $returnObj=false)
+	{
+		$str = '';
+		$where = 'Status=="' . \XeroAPI\XeroPHP\Models\Accounting\Account::STATUS_ACTIVE .'" AND Type=="' .  \XeroAPI\XeroPHP\Models\Accounting\AccountType::FIXED . '"';
+		$accountFixedAsset = $apiInstance->getAccounts($xeroTenantId, null, $where); 
+		$fixedAssetAccountId = $accountFixedAsset->getAccounts()[0]->getAccountId(); 
+
+		$where = 'Status=="' . \XeroAPI\XeroPHP\Models\Accounting\Account::STATUS_ACTIVE .'" AND Type=="' .  \XeroAPI\XeroPHP\Models\Accounting\AccountType::EXPENSE . '"';
+		$accountDepreciationExpense = $apiInstance->getAccounts($xeroTenantId, null, $where); 
+		$depreciationExpenseAccountId = $accountDepreciationExpense->getAccounts()[0]->getAccountId(); 
+
+		$where = 'Status=="' . \XeroAPI\XeroPHP\Models\Accounting\Account::STATUS_ACTIVE .'" AND Type=="' .  \XeroAPI\XeroPHP\Models\Accounting\AccountType::DEPRECIATN . '"';
+		$accountAccumulatedDepreciation = $apiInstance->getAccounts($xeroTenantId, null, $where); 
+		$accumulatedDepreciationAccountId = $accountAccumulatedDepreciation->getAccounts()[0]->getAccountId(); 
+
+//[AssetType:Create]
+$depreciationRate = floatval(0.5);
+$bookDepreciationSetting = new XeroAPI\XeroPHP\Models\Asset\BookDepreciationSetting;
+$bookDepreciationSetting->setAveragingMethod(\XeroAPI\XeroPHP\Models\Asset\BookDepreciationSetting::AVERAGING_METHOD_ACTUAL_DAYS)
+					->setDepreciationCalculationMethod(\XeroAPI\XeroPHP\Models\Asset\BookDepreciationSetting::DEPRECIATION_CALCULATION_METHOD_NONE)
+					->setDepreciationRate($depreciationRate)
+					->setDepreciationMethod(\XeroAPI\XeroPHP\Models\Asset\BookDepreciationSetting::DEPRECIATION_METHOD_DIMINISHING_VALUE100);
+
+$assetType = new XeroAPI\XeroPHP\Models\Asset\AssetType;
+$assetType->setAssetTypeName('Computer -' . $this->getRandNum())
+	->setFixedAssetAccountId($fixedAssetAccountId)
+	->setDepreciationExpenseAccountId($depreciationExpenseAccountId)
+	->setAccumulatedDepreciationAccountId($accumulatedDepreciationAccountId)
+	->setBookDepreciationSetting($bookDepreciationSetting);
+
+$result = $assetsApi->createAssetType($xeroTenantId, $assetType); 						
+//[/AssetType:Create]
+
+		$str = $str . "Get specific Fixed Asset: " . $result->getAssetTypeName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getAssetSettings($xeroTenantId,$assetsApi,$returnObj=false)
+	{
+		$str = '';
+
+//[AssetTypes:Read]
+$result = $assetsApi->getAssetSettings($xeroTenantId); 						
+//[/AssetTypes:Read]
+
+		$str = $str . "Get Asset number prefix: " . $result->getAssetNumberPrefix() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getProject($xeroTenantId,$projectApi,$returnObj=false)
+	{
+		$str = '';
+		$one = $this->getProjects($xeroTenantId,$projectApi,true);
+		$projectId = $one->getItems()[0]->getProjectId();
+//[Project:Read]
+$result = $projectApi->getProject($xeroTenantId,$projectId); 						
+//[/Project:Read]
+
+		$str = $str . "Get project name: " . $result->getName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function createProject($xeroTenantId,$projectApi,$accountingApi,$returnObj=false)
+	{
+		$str = '';
+		$new = $this->createContacts($xeroTenantId,$accountingApi,true);
+		$contactId = $new->getContacts()[0]->getContactId();
+//[Project:Create]
+$projectCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\ProjectCreateOrUpdate;
+$projectCreateOrUpdate->setContactId($contactId)
+	->setName("New Fence")
+	->setDeadlineUtc(new DateTime('2019-12-10T12:59:59Z'))
+	->setEstimateAmount(199.00);
+	
+$result = $projectApi->createProject($xeroTenantId,$projectCreateOrUpdate); 						
+//[/Project:Create]
+
+		$str = $str . "Create project name: " . $result->getName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function updateProject($xeroTenantId,$projectApi,$accountingApi,$returnObj=false)
+	{
+		$str = '';
+		$new = $this->createProject($xeroTenantId,$projectApi,$accountingApi,true);
+		$projectId = $new->getProjectId();
+//[Project:Create]
+$projectCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\ProjectCreateOrUpdate;
+$projectCreateOrUpdate->setName("New Bathroom")
+	->setDeadlineUtc(new DateTime('2019-12-10T12:59:59Z'))
+	->setEstimateAmount(199.00);
+	
+$result = $projectApi->updateProject($xeroTenantId,$projectId,$projectCreateOrUpdate); 						
+//[/Project:Create]
+
+		$str = $str . "Create project name: " . $result->getName() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getProjects($xeroTenantId,$projectApi,$returnObj=false)
+	{
+		$str = '';
+
+//[Projects:Read]
+$result = $projectApi->getProjects($xeroTenantId); 						
+//[/Projects:Read]
+
+		$str = $str . "Get project count: " . $result->getPagination()->getItemCount() . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+
+// HELPERS METHODS
 	public function getRandNum()
 	{
 		$randNum = strval(rand(1000,100000)); 

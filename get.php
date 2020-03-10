@@ -44,11 +44,23 @@
             $newAccessToken->getValues()["id_token"] );
 	}
 
-	$config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$storage->getSession()['token'] );
-	
-	$config->setHost("https://api.xero.com/api.xro/2.0");        
-	
-	$apiInstance = new XeroAPI\XeroPHP\Api\AccountingApi(
+	$config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$storage->getSession()['token'] );		  
+	$accountingApi = new XeroAPI\XeroPHP\Api\AccountingApi(
+	    new GuzzleHttp\Client(),
+	    $config
+	);
+
+	$assetApi = new XeroAPI\XeroPHP\Api\AssetApi(
+	    new GuzzleHttp\Client(),
+	    $config
+	);
+
+	$identityApi = new XeroAPI\XeroPHP\Api\IdentityApi(
+	    new GuzzleHttp\Client(),
+	    $config
+	);
+
+	$projectApi = new XeroAPI\XeroPHP\Api\ProjectApi(
 	    new GuzzleHttp\Client(),
 	    $config
 	);
@@ -110,46 +122,89 @@
 			try {
 			switch($endpoint)
 			{
-			    case "Accounts":
+
+
+
+				
+				case "Connection":
+				    switch($action)
+					{
+				    	case "Delete":
+						echo $ex->deleteConnection($xeroTenantId,$identityApi);
+						break;
+				    	default:
+					    echo $action . " action not supported in API";
+				    }
+				break;
+				
+				case "Account":
 				    switch($action)
 					{
 				    	case "Create":
-						echo $ex->createAccount($xeroTenantId,$apiInstance);
+						echo $ex->createAccount($xeroTenantId,$accountingApi);
 						break;
 				    	case "Read":
-				        echo $ex->getAccount($xeroTenantId,$apiInstance);
+				        echo $ex->getAccount($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":	
-				        echo $ex->updateAccount($xeroTenantId,$apiInstance);
+				        echo $ex->updateAccount($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteAccount($xeroTenantId,$apiInstance);
+				        echo $ex->deleteAccount($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Archive":
-				        echo $ex->archiveAccount($xeroTenantId,$apiInstance);
+				        echo $ex->archiveAccount($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Attachment":
-				        echo $ex->attachmentAccount($xeroTenantId,$apiInstance);
-				    	break;
+				        echo $ex->attachmentAccount($xeroTenantId,$accountingApi);
+						break;
+						case "AttachmentById":
+						echo $ex->getAccountAttachmentById($xeroTenantId,$accountingApi);
+						break;
 				    	default:
 					    echo $action . " action not supported in API";
 				    }
 			    break;
 
-			    case "BankTransactions":
+			    case "Accounts":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccounts($xeroTenantId,$accountingApi);
+				        break;
+				        default:
+					    echo $action . " action not supported in API";
+				    }
+			    break;
+
+				case "BankTransaction":
+				    switch($action)
+					{
+				        case "Read":
+				        echo $ex->getBankTransaction($xeroTenantId,$accountingApi);
+				        break;
+				        case "Update":
+				        echo $ex->updateBankTransaction($xeroTenantId,$accountingApi);
+				    	break;
+				    	case "Delete":
+				        echo $ex->deleteBankTransaction($xeroTenantId,$accountingApi);
+				    	break;
+				    	default:
+					    echo $action . " action not supported in API";
+				    }
+				break;
+
+				case "BankTransactions":
 				    switch($action)
 					{
 						case "Create":
-						print_r($ex->createBankTransactions($xeroTenantId,$apiInstance));
+						print_r($ex->createBankTransactions($xeroTenantId,$accountingApi));
 						break;
 				        case "Read":
-				        echo $ex->getBankTransaction($xeroTenantId,$apiInstance);
+				        echo $ex->getBankTransactions($xeroTenantId,$accountingApi);
 				        break;
-				        case "Update":
-				        echo $ex->updateBankTransaction($xeroTenantId,$apiInstance);
-				    	break;
-				    	case "Delete":
-				        echo $ex->deleteBankTransaction($xeroTenantId,$apiInstance);
+				        case "UpdateOrCreate":
+				        echo $ex->updateOrCreateBankTransactions($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -160,10 +215,10 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createBankTransfer($xeroTenantId,$apiInstance);
+				        echo $ex->createBankTransfer($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getBankTransfer($xeroTenantId,$apiInstance);
+				        echo $ex->getBankTransfer($xeroTenantId,$accountingApi);
 				        break;
 				        default:
 					    echo $action . " action not supported in API";
@@ -174,27 +229,41 @@
 				    switch($action)
 					{
 				        case "Read":
-				        echo $ex->getBrandingTheme($xeroTenantId,$apiInstance);
+				        echo $ex->getBrandingTheme($xeroTenantId,$accountingApi);
 				        break;
 				        default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
 				 
+				 case "Contact":
+				    switch($action)
+					{
+						case "Read":
+				        echo $ex->getContact($xeroTenantId,$accountingApi);
+				        break;
+				        case "Update":
+				        echo $ex->updateContact($xeroTenantId,$accountingApi);
+				    	break;
+				    	case "Archive":
+				        echo $ex->archiveContact($xeroTenantId,$accountingApi);
+				    	break;
+				    	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
 				 case "Contacts":
 				    switch($action)
 					{
 						case "Create":
-						echo $ex->createContacts($xeroTenantId,$apiInstance);
+						echo $ex->createContacts($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getContact($xeroTenantId,$apiInstance);
+				        echo $ex->getContact($xeroTenantId,$accountingApi);
 				        break;
-				        case "Update":
-				        echo $ex->updateContact($xeroTenantId,$apiInstance);
-				    	break;
-				    	case "Archive":
-				        echo $ex->archiveContact($xeroTenantId,$apiInstance);
+				        case "UpdateOrCreate":
+				        echo $ex->updateOrCreateContacts($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -205,22 +274,22 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createContactGroup($xeroTenantId,$apiInstance);
+				        echo $ex->createContactGroup($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getContactGroup($xeroTenantId,$apiInstance);
+				        echo $ex->getContactGroup($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateContactGroup($xeroTenantId,$apiInstance);
+				        echo $ex->updateContactGroup($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Archive":
-				        echo $ex->archiveContactGroup($xeroTenantId,$apiInstance);
+				        echo $ex->archiveContactGroup($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "RemoveContact":
-				        echo $ex->removeContactFromContactGroup($xeroTenantId,$apiInstance);
+				        echo $ex->removeContactFromContactGroup($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "AddContact":
-				        echo $ex->createContactGroupContacts($xeroTenantId,$apiInstance);
+				        echo $ex->createContactGroupContacts($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -231,25 +300,25 @@
 				    switch($action)
 					{
 						case "Create":
-						echo $ex->createCreditNotes($xeroTenantId,$apiInstance);
+						echo $ex->createCreditNotes($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getCreditNote($xeroTenantId,$apiInstance);
+				        echo $ex->getCreditNote($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateCreditNote($xeroTenantId,$apiInstance);
+				        echo $ex->updateCreditNote($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Allocate":
-				        echo $ex->allocateCreditNote($xeroTenantId,$apiInstance);
+				        echo $ex->allocateCreditNote($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Refund":
-				        echo $ex->refundCreditNote($xeroTenantId,$apiInstance);
+				        echo $ex->refundCreditNote($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteCreditNote($xeroTenantId,$apiInstance);
+				        echo $ex->deleteCreditNote($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Void":
-				        echo $ex->voidCreditNote($xeroTenantId,$apiInstance);
+				        echo $ex->voidCreditNote($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -260,10 +329,10 @@
 				    switch($action)
 					{
 				        case "Create":
-				        echo $ex->createCurrency($xeroTenantId,$apiInstance);
+				        echo $ex->createCurrency($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getCurrency($xeroTenantId,$apiInstance);
+				        echo $ex->getCurrency($xeroTenantId,$accountingApi);
 				        break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -274,13 +343,13 @@
 				    switch($action)
 					{
 						case "Create":
-						echo $ex->createEmployees($xeroTenantId,$apiInstance);
+						echo $ex->createEmployees($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getEmployee($xeroTenantId,$apiInstance);
+				        echo $ex->getEmployee($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateEmployee($xeroTenantId,$apiInstance);
+				        echo $ex->updateEmployee($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -291,13 +360,13 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createExpenseClaim($xeroTenantId,$apiInstance);
+				        echo $ex->createExpenseClaim($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getExpenseClaim($xeroTenantId,$apiInstance);
+				        echo $ex->getExpenseClaim($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateExpenseClaim($xeroTenantId,$apiInstance);
+				        echo $ex->updateExpenseClaim($xeroTenantId,$accountingApi);
 				        //echo $action . " action is supported in API but not SDK (no setStatus)";
 				    	break;
 				    	default:
@@ -309,21 +378,24 @@
 				    switch($action)
 					{
 						case "Create":
-						echo $ex->createInvoices($xeroTenantId,$apiInstance);
+						echo $ex->createInvoices($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getInvoice($xeroTenantId,$apiInstance);
-				        break;
+				        echo $ex->getInvoice($xeroTenantId,$accountingApi);
+						break;
+						case "ReadPdf":
+						echo $ex->getInvoiceAsPdf($xeroTenantId,$accountingApi);
+						break;
 				        case "Update":
-				        echo $ex->updateInvoice($xeroTenantId,$apiInstance);
+				        echo $ex->updateInvoice($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteInvoice($xeroTenantId,$apiInstance);
+				        echo $ex->deleteInvoice($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Void":
-				        echo $ex->voidInvoice($xeroTenantId,$apiInstance);
-				    	break;
-				    	default:
+				        echo $ex->voidInvoice($xeroTenantId,$accountingApi);
+						break;
+						default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
@@ -332,7 +404,7 @@
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getInvoiceReminder($xeroTenantId,$apiInstance);
+				        echo $ex->getInvoiceReminder($xeroTenantId,$accountingApi);
 				        break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -343,16 +415,16 @@
 				    switch($action)
 					{
 				    	case "Create":
-						echo $ex->createItems($xeroTenantId,$apiInstance);
+						echo $ex->createItems($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getItem($xeroTenantId,$apiInstance);
+				        echo $ex->getItem($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateItem($xeroTenantId,$apiInstance);
+				        echo $ex->updateItem($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteItem($xeroTenantId,$apiInstance);
+				        echo $ex->deleteItem($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -363,7 +435,7 @@
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getJournal($xeroTenantId,$apiInstance);
+				        echo $ex->getJournal($xeroTenantId,$accountingApi);
 				        break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -374,16 +446,16 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createLinkedTransaction($xeroTenantId,$apiInstance);
+				        echo $ex->createLinkedTransaction($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getLinkedTransaction($xeroTenantId,$apiInstance);
+				        echo $ex->getLinkedTransaction($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateLinkedTransaction($xeroTenantId,$apiInstance);
+				        echo $ex->updateLinkedTransaction($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteLinkedTransaction($xeroTenantId,$apiInstance);
+				        echo $ex->deleteLinkedTransaction($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -394,13 +466,13 @@
 				    switch($action)
 					{
 				    	case "Create":
-						echo $ex->createManualJournals($xeroTenantId,$apiInstance);
+						echo $ex->createManualJournals($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getManualJournal($xeroTenantId,$apiInstance);
+				        echo $ex->getManualJournal($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateManualJournal($xeroTenantId,$apiInstance);
+				        echo $ex->updateManualJournal($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -411,7 +483,7 @@
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getOrganisation($xeroTenantId,$apiInstance);
+				        echo $ex->getOrganisation($xeroTenantId,$accountingApi);
 				        break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -422,16 +494,16 @@
 				    switch($action)
 					{
 				        case "Read":
-				        echo $ex->getOverpayment($xeroTenantId,$apiInstance);
+				        echo $ex->getOverpayment($xeroTenantId,$accountingApi);
 				        break;
 				        case "Create":
-				        echo $ex->createOverpayment($xeroTenantId,$apiInstance);
+				        echo $ex->createOverpayment($xeroTenantId,$accountingApi);
 				        break;
 				        case "Allocate":
-						echo $ex->allocateOverpayments($xeroTenantId,$apiInstance);
+						echo $ex->allocateOverpayments($xeroTenantId,$accountingApi);
 						break;
 				    	case "Refund":
-				        echo $ex->refundOverpayment($xeroTenantId,$apiInstance);
+				        echo $ex->refundOverpayment($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -442,16 +514,16 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createPayment($xeroTenantId,$apiInstance);
+				        echo $ex->createPayment($xeroTenantId,$accountingApi);
 						break;
 						case "CreateMulti":
-						echo $ex->createPayments($xeroTenantId,$apiInstance);
+						echo $ex->createPayments($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getPayment($xeroTenantId,$apiInstance);
+				        echo $ex->getPayment($xeroTenantId,$accountingApi);
 				        break;
 				        case "Delete":
-				        echo $ex->deletePayment($xeroTenantId,$apiInstance);
+				        echo $ex->deletePayment($xeroTenantId,$accountingApi);
 				        break;
 				        default:
 					    echo $action . " action not supported in API";
@@ -462,16 +534,16 @@
 				    switch($action)
 					{
 				        case "Read":
-				        echo $ex->getPrepayment($xeroTenantId,$apiInstance);
+				        echo $ex->getPrepayment($xeroTenantId,$accountingApi);
 				        break;
 				        case "Create":
-				        echo $ex->createPrepayment($xeroTenantId,$apiInstance);
+				        echo $ex->createPrepayment($xeroTenantId,$accountingApi);
 				        break;
 				        case "Allocate":
-				        echo $ex->allocatePrepayment($xeroTenantId,$apiInstance);
+				        echo $ex->allocatePrepayment($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Refund":
-				        echo $ex->refundPrepayment($xeroTenantId,$apiInstance);
+				        echo $ex->refundPrepayment($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -482,16 +554,16 @@
 				    switch($action)
 					{
 				    	case "Create":
-						echo $ex->createPurchaseOrders($xeroTenantId,$apiInstance);
+						echo $ex->createPurchaseOrders($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getPurchaseOrder($xeroTenantId,$apiInstance);
+				        echo $ex->getPurchaseOrder($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updatePurchaseOrder($xeroTenantId,$apiInstance);
+				        echo $ex->updatePurchaseOrder($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deletePurchaseOrder($xeroTenantId,$apiInstance);
+				        echo $ex->deletePurchaseOrder($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -502,13 +574,13 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createReceipt($xeroTenantId,$apiInstance);
+				        echo $ex->createReceipt($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getReceipt($xeroTenantId,$apiInstance);
+				        echo $ex->getReceipt($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateReceipt($xeroTenantId,$apiInstance);
+				        echo $ex->updateReceipt($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -519,7 +591,7 @@
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getRepeatingInvoice($xeroTenantId,$apiInstance);
+				        echo $ex->getRepeatingInvoice($xeroTenantId,$accountingApi);
 				        break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -530,34 +602,34 @@
 				    switch($action)
 					{
 				    	case "TenNinetyNine":
-				        echo $ex->getTenNinetyNine($xeroTenantId,$apiInstance);
+				        echo $ex->getTenNinetyNine($xeroTenantId,$accountingApi);
 				        break;
 				        case "AgedPayablesByContact":
-				        echo $ex->getAgedPayablesByContact($xeroTenantId,$apiInstance);
+				        echo $ex->getAgedPayablesByContact($xeroTenantId,$accountingApi);
 				        break;
 				        case "AgedReceivablesByContact":
-				        echo $ex->getAgedReceivablesByContact($xeroTenantId,$apiInstance);
+				        echo $ex->getAgedReceivablesByContact($xeroTenantId,$accountingApi);
 				        break;
 				        case "BalanceSheet":
-				        echo $ex->getBalanceSheet($xeroTenantId,$apiInstance);
+				        echo $ex->getBalanceSheet($xeroTenantId,$accountingApi);
 				        break;
 				        case "BankStatement":
-				        echo $ex->getBankStatement($xeroTenantId,$apiInstance);
+				        echo $ex->getBankStatement($xeroTenantId,$accountingApi);
 				        break;
 				        case "BankSummary":
-				        echo $ex->getBankSummary($xeroTenantId,$apiInstance);
+				        echo $ex->getBankSummary($xeroTenantId,$accountingApi);
 				        break;
 				        case "BudgetSummary":
-				        echo $ex->getBudgetSummary($xeroTenantId,$apiInstance);
+				        echo $ex->getBudgetSummary($xeroTenantId,$accountingApi);
 				        break;
 				        case "ExecutiveSummary":
-				        echo $ex->getExecutiveSummary($xeroTenantId,$apiInstance);
+				        echo $ex->getExecutiveSummary($xeroTenantId,$accountingApi);
 				        break;
 				        case "ProfitAndLoss":
-				        echo $ex->getProfitAndLoss($xeroTenantId,$apiInstance);
+				        echo $ex->getProfitAndLoss($xeroTenantId,$accountingApi);
 				        break;
 				        case "TrialBalance":
-				        echo $ex->getTrialBalance($xeroTenantId,$apiInstance);
+				        echo $ex->getTrialBalance($xeroTenantId,$accountingApi);
 				        break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -568,16 +640,16 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createTaxRates($xeroTenantId,$apiInstance);
+				        echo $ex->createTaxRates($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getTaxRate($xeroTenantId,$apiInstance);
+				        echo $ex->getTaxRate($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateTaxRate($xeroTenantId,$apiInstance);
+				        echo $ex->updateTaxRate($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteTaxRate($xeroTenantId,$apiInstance);
+				        echo $ex->deleteTaxRate($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -588,19 +660,19 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createTrackingCategory($xeroTenantId,$apiInstance);
+				        echo $ex->createTrackingCategory($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getTrackingCategory($xeroTenantId,$apiInstance);
+				        echo $ex->getTrackingCategory($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateTrackingCategory($xeroTenantId,$apiInstance);
+				        echo $ex->updateTrackingCategory($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteTrackingCategory($xeroTenantId,$apiInstance);
+				        echo $ex->deleteTrackingCategory($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Archive":
-				        echo $ex->archiveTrackingCategory($xeroTenantId,$apiInstance);
+				        echo $ex->archiveTrackingCategory($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -611,16 +683,16 @@
 				    switch($action)
 					{
 				    	case "Create":
-				        echo $ex->createTrackingOptions($xeroTenantId,$apiInstance);
+				        echo $ex->createTrackingOptions($xeroTenantId,$accountingApi);
 				        break;
 				        case "Read":
-				        echo $ex->getTrackingOption($xeroTenantId,$apiInstance);
+				        echo $ex->getTrackingOption($xeroTenantId,$accountingApi);
 				        break;
 				        case "Update":
-				        echo $ex->updateTrackingOptions($xeroTenantId,$apiInstance);
+				        echo $ex->updateTrackingOptions($xeroTenantId,$accountingApi);
 				    	break;
 				    	case "Delete":
-				        echo $ex->deleteTrackingOptions($xeroTenantId,$apiInstance);
+				        echo $ex->deleteTrackingOptions($xeroTenantId,$accountingApi);
 				    	break;
 				    	default:
 					    echo $action . " action not supported in API";
@@ -631,16 +703,107 @@
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getUser($xeroTenantId,$apiInstance);
+				        echo $ex->getUser($xeroTenantId,$accountingApi);
 				        break;
 				        default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
+
+				 case "Asset":
+				    switch($action)
+					{
+				    	case "Create":
+				        echo $ex->createAsset($xeroTenantId,$assetApi);
+				        break;
+				        case "Read":
+				        echo $ex->getAsset($xeroTenantId,$assetApi);
+				        break;
+				        case "Update":
+				        echo $ex->updateAsset($xeroTenantId,$assetApi);
+				    	break;
+				    	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "Assets":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAssets($xeroTenantId,$assetApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AssetType":
+				    switch($action)
+					{
+				    	case "Create":
+				        echo $ex->createAssetType($xeroTenantId,$assetApi, $accountingApi);
+				        break; 
+				        default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AssetTypes":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAssetTypes($xeroTenantId,$assetApi);
+				        break;
+				        default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AssetSettings":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAssetSettings($xeroTenantId,$assetApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "Project":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getProject($xeroTenantId,$projectApi);
+						break;
+						case "Create":
+						echo $ex->createProject($xeroTenantId,$projectApi,$accountingApi);
+						break;
+						case "Update":
+						echo $ex->updateProject($xeroTenantId,$projectApi,$accountingApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "Projects":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getProjects($xeroTenantId,$projectApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
 			}
 
 			} catch (Exception $e) {
-                echo 'Exception when calling AccountingApi: ', $e->getMessage(), PHP_EOL;
+				var_dump($e);
+                echo 'Exception when calling Xero API: ', $e->getMessage(), PHP_EOL;
             }
      
 		?>
