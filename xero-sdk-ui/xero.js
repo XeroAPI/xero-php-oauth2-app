@@ -59,7 +59,9 @@ var endpoint = [
     {name: "AssetSettings",action:[{name: "Read"}]},
     {name: "---PROJECTS---",action:[{name: ""}]},
     {name: "Project",action:[{name: "Create"},{name: "Read"},{name: "Update"}]},
-    {name: "Projects",action:[{name: "Read"}]}
+    {name: "Projects",action:[{name: "Read"}]},
+    {name: "---PAYROLL AU---",action:[{name: ""}]},
+    {name: "PayrollAuEmployee",action:[{name: "Create"},{name: "Read"},{name: "Update"}]},
 ];
     
 function populateAction(currEndpoint,currAction) {

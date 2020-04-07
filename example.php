@@ -15,6 +15,65 @@ class ExampleClass
 
 
 /*
+PAYROLL AU APIs
+Following methods demonstrate Xero's 
+AU Payroll API endpoints
+https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/accounting-yaml/xero_accounting.yaml 
+*/
+public function getPayrollAuEmployees($xeroTenantId,$payrollAuApi,$returnObj=false)
+{
+	$str = '';
+	
+//[PayrollAuEmployees:Read]
+$result = $payrollAuApi->getEmployees($xeroTenantId);
+//[/PayrollAuEmployees:Read]
+
+	if($returnObj) {
+		return $result;
+	} else {
+		$str = $str . "Get all employees total: " . count($result->getEmployees()) . "<br>";
+		return $str;
+	}
+}
+
+public function createPayrollAuEmployees($xeroTenantId,$payrollAuApi,$returnObj=false)
+{
+	$str = '';
+	
+//[PayrollAuEmployees:Create]
+$employee = new XeroAPI\XeroPHP\Models\PayrollAu\Employee;
+$employee->setFirstName("Fred");
+$employee->setLastName("Potter");
+$employee->setEmail("albus@hogwarts.edu");
+$dateOfBirth = DateTime::createFromFormat('m/d/Y', '05/29/2000');
+$employee->setDateOfBirthAsDate($dateOfBirth);
+
+$address = new XeroAPI\XeroPHP\Models\PayrollAu\HomeAddress;
+$address->setAddressLine1("101 Green St");
+$address->setCity("Island Bay");
+$address->setRegion(\XeroAPI\XeroPHP\Models\PayrollAu\State::NSW);
+$address->setCountry("AUSTRALIA");
+$address->setPostalCode("6023");
+$employee->setHomeAddress($address);
+
+$newEmployees = [];		
+array_push($newEmployees, $employee);
+
+$result = $payrollAuApi->createEmployee($xeroTenantId, $newEmployees);
+//[/PayrollAuEmployees:Create]
+
+	if($returnObj) {
+		return $result;
+	} else {
+		$str = $str . "Created employee: " . $result->getEmployees()[0]->getFirstName() . "<br>";
+		return $str;
+	}
+}
+
+	   
+
+
+/*
 IDENTITY APIs
 Following methods demonstrate Xero's 
 Accounting API endpoints
