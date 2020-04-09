@@ -24,9 +24,9 @@ public function getPayrollAuEmployees($xeroTenantId,$payrollAuApi,$returnObj=fal
 {
 	$str = '';
 	
-//[PayrollAuEmployees:Read]
+//[PayrollAuEmployee:Read]
 $result = $payrollAuApi->getEmployees($xeroTenantId);
-//[/PayrollAuEmployees:Read]
+//[/PayrollAuEmployee:Read]
 
 	if($returnObj) {
 		return $result;
@@ -40,7 +40,7 @@ public function createPayrollAuEmployees($xeroTenantId,$payrollAuApi,$returnObj=
 {
 	$str = '';
 	
-//[PayrollAuEmployees:Create]
+//[PayrollAuEmployee:Create]
 $employee = new XeroAPI\XeroPHP\Models\PayrollAu\Employee;
 $employee->setFirstName("Fred");
 $employee->setLastName("Potter");
@@ -60,7 +60,7 @@ $newEmployees = [];
 array_push($newEmployees, $employee);
 
 $result = $payrollAuApi->createEmployee($xeroTenantId, $newEmployees);
-//[/PayrollAuEmployees:Create]
+//[/PayrollAuEmployee:Create]
 
 	if($returnObj) {
 		return $result;
