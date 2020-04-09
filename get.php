@@ -65,6 +65,11 @@
 	    $config
 	);
 
+	$payrollAuApi = new XeroAPI\XeroPHP\Api\PayrollAuApi(
+	    new GuzzleHttp\Client(),
+	    $config
+	);
+
 	if (isset($_POST["endpoint"]) ) {
 		$endpoint = htmlspecialchars($_POST["endpoint"]);
 	} else {
@@ -794,6 +799,20 @@
 				    	case "Read":
 				        echo $ex->getProjects($xeroTenantId,$projectApi);
 				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "PayrollAuEmployee":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getPayrollAuEmployees($xeroTenantId,$payrollAuApi);
+						break;
+						case "Create":
+						echo $ex->createPayrollAuEmployees($xeroTenantId,$payrollAuApi);
+						break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
