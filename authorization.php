@@ -12,8 +12,6 @@
 	// Storage Classe uses sessions for storing access token > extend to your DB of choice
 	$storage = new StorageClass();
 
-	session_start();
-
 	$provider = new \League\OAuth2\Client\Provider\GenericProvider([
         'clientId'                => $clientId,   
         'clientSecret'            => $clientSecret,

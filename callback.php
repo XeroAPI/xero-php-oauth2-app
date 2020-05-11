@@ -42,8 +42,7 @@
             $jwt = new XeroAPI\XeroPHP\JWTClaims();
             $jwt->setTokenId($accessToken->getValues()["id_token"]);
             $jwt->decode();
-            echo $jwt->getGivenName();
-
+       
             $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$accessToken->getToken() );
             $identityInstance = new XeroAPI\XeroPHP\Api\IdentityApi(
                 new GuzzleHttp\Client(),
