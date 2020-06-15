@@ -119,6 +119,7 @@ $result = $apiInstance->getAccount($xeroTenantId,$accountId);
 			return $result;
 		} else {
 			$str = $str . "Get specific Account: " . $result->getAccounts()[0]->getName() . "<br>";
+			$str = $str . "Get Account Updated Date: " . $result->getAccounts()[0]->getUpdatedDateUtcAsDate()->format('Y-m-d H:i:s') . "<br>";
 			return $str;
 		}
 	}
