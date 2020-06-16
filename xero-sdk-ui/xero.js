@@ -44,6 +44,8 @@ var endpoint = [
     {name: "Payments",action:[{name: "Create"},{name: "CreateMulti"},{name: "Read"},{name: "Delete"}]},
     {name: "Prepayments",action:[{name: "Create"},{name: "Read"},{name: "Allocate"},{name: "Refund"}]},
     {name: "PurchaseOrders",action:[{name: "Create"},{name: "Read"},{name: "Update"},{name: "Delete"}]},
+    {name: "Quote",action:[{name: "Update"},{name: "Read"}]},
+    {name: "Quotes",action:[{name: "Create"},{name: "UpdateOrCreate"},{name: "Read"}]},
     {name: "Receipts",action:[{name: "Create"},{name: "Read"},{name: "Update"}]},
     {name: "RepeatingInvoices",action:[{name: "Read"}]},
     {name: "Reports",action:[{name: "TenNinetyNine"},{name: "AgedPayablesByContact"},{name: "AgedReceivablesByContact"},{name: "BalanceSheet"},{name: "BankSummary"},{name: "BudgetSummary"},{name: "ExecutiveSummary"},{name: "ProfitAndLoss"},{name: "TrialBalance"}]},
@@ -62,6 +64,7 @@ var endpoint = [
     {name: "Projects",action:[{name: "Read"}]},
     {name: "---PAYROLL AU---",action:[{name: ""}]},
     {name: "PayrollAuEmployee",action:[{name: "Create"},{name: "Read"},{name: "Update"}]},
+    {name: "PayrollAuLeaveApplication",action:[{name: "Create"}]},
 ];
     
 function populateAction(currEndpoint,currAction) {

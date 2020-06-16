@@ -1,6 +1,7 @@
 <?php
 // Use this class to deserialize error caught
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
+use XeroAPI\XeroPHP\PayrollAuObjectSerializer;
 
 class ExampleClass
 {
@@ -60,7 +61,7 @@ $newEmployees = [];
 array_push($newEmployees, $employee);
 
 $result = $payrollAuApi->createEmployee($xeroTenantId, $newEmployees);
-//[/PayrollAuEmployee:Create]
+	//[/PayrollAuEmployee:Create]
 
 	if($returnObj) {
 		return $result;
@@ -70,7 +71,44 @@ $result = $payrollAuApi->createEmployee($xeroTenantId, $newEmployees);
 	}
 }
 
-	   
+
+
+public function createPayrollAuLeaveApplications($xeroTenantId,$payrollAuApi,$returnObj=false)
+{
+	$str = '';
+	$employee = $this->createPayrollAuEmployees($xeroTenantId, $payrollAuApi, true);
+	$employeeId = $employee->getEmployees()[0]->getEmployeeId();
+	$leaveapplications = $payrollAuApi->getLeaveApplications($xeroTenantId);
+	$leaveTypeId = $leaveapplications->getLeaveApplications()[0]->getLeaveTypeId(); 
+//[PayrollAuLeaveApplication:Create]
+$leaveapplication = new XeroAPI\XeroPHP\Models\PayrollAu\LeaveApplication;
+$leaveapplication->setDescription("Fred");
+$leaveapplication->setEmployeeID($employeeId);
+$leaveapplication->setLeaveTypeID($leaveTypeId);
+$startDate = DateTime::createFromFormat('m/d/Y', '05/29/2020');
+$leaveapplication->setStartDateAsDate(new DateTime('2020-05-02'));
+$endDate = DateTime::createFromFormat('m/d/Y', '06/2/2020');
+$leaveapplication->setEndDateAsDate(new DateTime('2020-05-12'));
+
+$arr_leaveapplications = [];		
+array_push($arr_leaveapplications, $leaveapplication);
+try {
+	$result = $payrollAuApi->createLeaveApplication($xeroTenantId, $arr_leaveapplications);
+	$str = $str . "Created leave application: " . $result[0]->getLeaveApplicationId() . "<br>";
+} catch (\XeroAPI\XeroPHP\ApiException $e) {
+	$error = PayrollAuObjectSerializer::deserialize($e->getResponseBody(), '\XeroAPI\XeroPHP\Models\PayrollAu\APIException',[]);
+	$str = "ApiException - " . $error->getMessage();
+}
+	//[/PayrollAuLeaveApplication:Create]
+
+	
+	if($returnObj) {
+		return $result;
+	} else {
+		return $str;
+	}
+}
+
 
 
 /*
@@ -2238,6 +2276,174 @@ $result = $apiInstance->updatePurchaseOrder($xeroTenantId,$purchaseorderId,$purc
 		$str = $str . "Deleted PurchaseOrder: " . $result->getPurchaseOrders()[0]->getReference() . "<br>";
 		
 		return $str;
+	}
+
+	public function getQuotes($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+//[Quotes:Read]
+// READ ALL 
+$result = $apiInstance->getQuotes($xeroTenantId); 						
+//[/Quotes:Read]
+
+		$str = $str . "Total quotes: " . count($result) . "<br>";
+		
+		if($returnObj) {
+			return $result[0];
+		} else {
+			return $str;
+		}
+	}
+
+	public function createQuotes($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$lineitem = $this->getLineItem($xeroTenantId,$apiInstance);
+		$lineitems = [];		
+		array_push($lineitems, $lineitem);
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+
+//[Quotes:Create]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactId($contactId);
+
+$arr_quotes = [];	
+$quote_1 = new XeroAPI\XeroPHP\Models\Accounting\Quote;
+$quote_1->setDate(new DateTime('2020-06-02'))
+	->setContact($contact)
+	->setLineItems($lineitems);
+array_push($arr_quotes, $quote_1);
+
+$quote_2 = new XeroAPI\XeroPHP\Models\Accounting\Quote;
+$quote_2->setDate(new DateTime('2020-06-12'))
+	->setContact($contact)
+	->setLineItems($lineitems);
+array_push($arr_quotes, $quote_2);
+		
+$quotes_obj = new XeroAPI\XeroPHP\Models\Accounting\Quotes;
+$quotes_obj->setQuotes($arr_quotes);
+
+$result = $apiInstance->createQuotes($xeroTenantId,$quotes_obj);
+//[/Quotes:Create]
+		
+		$str = $str . "Created Quotes Number: " . $result[0]->getQuoteNumber() . " and Created Quote Number: " . $result[1]->getQuoteNumber() . "<br>" ;
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function updateOrCreateQuotes($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$lineitem = $this->getLineItem($xeroTenantId,$apiInstance);
+		$lineitems = [];		
+		array_push($lineitems, $lineitem);
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+
+//[Quotes:UpdateOrCreate]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactId($contactId);
+
+$arr_quotes = [];	
+$quote_1 = new XeroAPI\XeroPHP\Models\Accounting\Quote;
+$quote_1->setDate(new DateTime('2020-06-02'))
+	->setContact($contact)
+	->setLineItems($lineitems);
+array_push($arr_quotes, $quote_1);
+
+$quote_2 = new XeroAPI\XeroPHP\Models\Accounting\Quote;
+$quote_2->setContact($contact)
+	->setLineItems($lineitems);
+array_push($arr_quotes, $quote_2);
+		
+$quotes_obj = new XeroAPI\XeroPHP\Models\Accounting\Quotes;
+$quotes_obj->setQuotes($arr_quotes);
+
+$result = $apiInstance->updateOrCreateQuotes($xeroTenantId,$quotes_obj,false);
+//[/Quotes:UpdateOrCreate]
+		
+		$str = $str . "Created Quotes Number: " . $result[0]->getQuoteNumber() . " and Created Quote Number: " . $result[1]->getQuoteNumber() . "<br>" ;
+		
+		if(count($result[1]->getValidationErrors()) > 0) 
+		{
+			$str = $str . 'Error message: ' . $result[1]->getValidationErrors()[0]->getMessage();
+		}
+
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getQuote($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+		$quote = $this->getQuotes($xeroTenantId,$apiInstance,true); 	
+		$quoteId = $quote->getQuoteId();
+
+//[Quote:Read]
+// READ ALL 
+$result = $apiInstance->getQuote($xeroTenantId, $quoteId); 						
+//[/Quote:Read]
+
+		$str = $str . "Get quote: " . $result[0]->getQuoteNumber() . "<br>";
+		
+		if($returnObj) {
+			return $result[0];
+		} else {
+			return $str;
+		}
+	}
+
+	public function updateQuote($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+		$quote = $this->getQuotes($xeroTenantId,$apiInstance,true); 	
+		$quoteId = $quote->getQuoteId();
+
+		$lineitem = $this->getLineItem($xeroTenantId,$apiInstance);
+		$lineitems = [];		
+		array_push($lineitems, $lineitem);
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+
+//[Quote:Update]
+$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+$contact->setContactId($contactId);
+
+$arr_quotes = [];	
+$quote_1 = new XeroAPI\XeroPHP\Models\Accounting\Quote;
+$quote_1->setDate(new DateTime('2020-04-01'))
+	->setContact($contact)
+	->setLineItems($lineitems);
+array_push($arr_quotes, $quote_1);
+
+$quotes_obj = new XeroAPI\XeroPHP\Models\Accounting\Quotes;
+$quotes_obj->setQuotes($arr_quotes);
+
+$result = $apiInstance->updateQuote($xeroTenantId, $quoteId, $quotes_obj);
+//[/Quote:Update]
+		
+		$str = $str  . "Updated Quote Number: " . $result[0]->getQuoteNumber() . "<br>" ;
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
 	}
 
 	public function getReceipt($xeroTenantId,$apiInstance,$returnObj=false)
