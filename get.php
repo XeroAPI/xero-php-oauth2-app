@@ -575,6 +575,37 @@
 				    }
 				 break;
 
+				 case "Quote":
+				    switch($action)
+					{
+				        case "Read":
+				        echo $ex->getQuote($xeroTenantId,$accountingApi);
+				        break;
+				        case "Update":
+				        echo $ex->updateQuote($xeroTenantId,$accountingApi);
+				    	break;
+				    	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "Quotes":
+				    switch($action)
+					{
+				    	case "Create":
+						echo $ex->createQuotes($xeroTenantId,$accountingApi);
+						break;
+				        case "Read":
+				        echo $ex->getQuotes($xeroTenantId,$accountingApi);
+				        break;
+				        case "UpdateOrCreate":
+				        echo $ex->updateOrCreateQuotes($xeroTenantId,$accountingApi);
+				    	break;
+				    	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
 				 case "Receipts":
 				    switch($action)
 					{
@@ -812,6 +843,20 @@
 						break;
 						case "Create":
 						echo $ex->createPayrollAuEmployees($xeroTenantId,$payrollAuApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "PayrollAuLeaveApplication":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getPayrollAuLeaveApplication($xeroTenantId,$payrollAuApi);
+						break;
+						case "Create":
+						echo $ex->createPayrollAuLeaveApplications($xeroTenantId,$payrollAuApi);
 						break;
 				       	default:
 					    echo $action . " action not supported in API";
