@@ -85,9 +85,7 @@ $leaveapplication = new XeroAPI\XeroPHP\Models\PayrollAu\LeaveApplication;
 $leaveapplication->setDescription("Fred");
 $leaveapplication->setEmployeeID($employeeId);
 $leaveapplication->setLeaveTypeID($leaveTypeId);
-$startDate = DateTime::createFromFormat('m/d/Y', '05/29/2020');
 $leaveapplication->setStartDateAsDate(new DateTime('2020-05-02'));
-$endDate = DateTime::createFromFormat('m/d/Y', '06/2/2020');
 $leaveapplication->setEndDateAsDate(new DateTime('2020-05-12'));
 
 $arr_leaveapplications = [];		
