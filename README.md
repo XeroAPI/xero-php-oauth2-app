@@ -64,12 +64,12 @@ $provider = new \League\OAuth2\Client\Provider\GenericProvider([
 ## docker-compose
 
 Run `docker-compose up` in the root directory of this repository to launch a local server.
-The server will be published to port `8080`:
+The server will be published to port `8080` by default:
 
     http://localhost:8080/
     
 The redirect URL will be `http://localhost:8080/callback.php`, which must be
-set in the configuration and within your Xeeo app.
+set in the configuration of this demo application and within your Xero app.
 
 The local port can be changed through the `APP_HTTP_PORT` variable in the
 environment or set in `.env`.
