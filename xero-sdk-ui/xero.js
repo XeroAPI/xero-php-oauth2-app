@@ -18,6 +18,7 @@ Handlebars.getTemplate = function(name) {
 var endpoint = [
     {name: "---IDENTITY---",action:[{name: ""}]},
     {name: "Connection",action:[{name: "Delete"}]},
+    {name: "Connections",action:[{name: "Read"}]},
     {name: "---ACCOUNTING---",action:[{name: ""}]},
     {name: "Account",action:[{name: "Create"},{name: "Read"},{name: "Update"},{name: "Delete"},{name: "Archive"},{name: "Attachment"},{name: "AttachmentById"} ]},
     {name: "Accounts",action:[{name: "Read"}]},

@@ -61,6 +61,16 @@ $provider = new \League\OAuth2\Client\Provider\GenericProvider([
 
 ```
 
+## docker-compose
+
+Run `docker-compose` in the root directory to launch a local server.
+The server will be published to port 8080:
+
+    http://localhost:8080/
+    
+The redirect URL will be `http://localhost:8080/callback.php`, which must be
+set in the configuration and within your Xeeo app.
+
 ## License
 
 This software is published under the [MIT License](http://en.wikipedia.org/wiki/MIT_License).
