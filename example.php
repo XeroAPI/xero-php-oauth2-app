@@ -134,12 +134,31 @@ $result = $identityApi->deleteConnection($id);
 		}
 	}
 
-/*
-ACCOUNTING APIs
-Following methods demonstrate Xero's 
-Accounting API endpoints
-https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/accounting-yaml/xero_accounting.yaml 
-*/
+	public function getConnections($identityApi,$returnObj=false)
+	{
+		$str = '';
+
+
+//[Connections:Read]
+		$result = $identityApi->getConnections();
+//[/Connections:Read]
+
+		if ($returnObj) {
+			return $result;
+		} else {
+			$str = $str . "Connected tenants " . array_reduce($result, function ($carry, $item) {#
+					return trim($carry . ' ' . $item->getTenantId() . ' = "'. $item->getTenantName() . '"');
+				}) . '<br>';
+			return $str;
+		}
+	}
+
+	/*
+    ACCOUNTING APIs
+    Following methods demonstrate Xero's
+    Accounting API endpoints
+    https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/accounting-yaml/xero_accounting.yaml
+    */
    public function getAccount($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -405,7 +424,7 @@ $result2 = $apiInstance->getBankTransactions($xeroTenantId, null, $where);
 		$code = $getAccount->getAccounts()[0]->getCode();
 		$accountId = $getAccount->getAccounts()[0]->getAccountId();
 		$lineitem = $this->getLineItem();
-		$lineitems = [];		
+		$lineitems = [];
 		array_push($lineitems, $lineitem);
 
 //[BankTransactions:Create]
