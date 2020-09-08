@@ -1,0 +1,19 @@
+version: "3.1"
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "${APP_HTTP_PORT:-8080}:80"
+    volumes:
+      - .:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    working_dir: /httpdocs
+    links:
+      - php
+  php:
+    image: php:7-fpm
+    expose:
+      - 9000
+    volumes:
+      - .:/var/www

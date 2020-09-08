@@ -141,8 +141,19 @@
 					    echo $action . " action not supported in API";
 				    }
 				break;
-				
-				case "Account":
+
+                case "Connections":
+                    switch($action)
+                    {
+                        case "Read":
+                            echo $ex->getConnections($identityApi);
+                            break;
+                        default:
+                            echo $action . " action not supported in API";
+                    }
+                    break;
+
+                case "Account":
 				    switch($action)
 					{
 				    	case "Create":
