@@ -34,7 +34,7 @@ var endpoint = [
     {name: "Currencies",action:[{name: "Create"},{name: "Read"}]},
     {name: "Employees",action:[{name: "Create"},{name: "CreateMulti"},{name: "Read"},{name: "Update"}]},
     {name: "ExpenseClaims",action:[{name: "Create"},{name: "Read"},{name: "Update"}]},
-    {name: "Invoices",action:[{name: "Create"},{name: "ReadPdf"},{name: "Read"},{name: "Update"},{name: "Delete"},{name: "Void"}]},
+    {name: "Invoices",action:[{name: "Create"},{name: "UpdateOrCreate"},{name: "ReadPdf"},{name: "Read"},{name: "Update"},{name: "Delete"},{name: "Void"}]},
     {name: "InvoiceReminders",action:[{name: "Read"}]},
     {name: "Items",action:[{name: "Create"},{name: "CreateMulti"},{name: "Read"},{name: "Update"},{name: "Delete"}]},
     {name: "Journals",action:[{name: "Read"}]},

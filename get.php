@@ -396,6 +396,9 @@
 						case "Create":
 						echo $ex->createInvoices($xeroTenantId,$accountingApi);
 						break;
+						case "UpdateOrCreate":
+						echo $ex->updateOrCreateInvoices($xeroTenantId,$accountingApi);
+						break;
 				        case "Read":
 				        echo $ex->getInvoice($xeroTenantId,$accountingApi);
 						break;
