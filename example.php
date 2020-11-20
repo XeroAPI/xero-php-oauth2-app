@@ -1392,9 +1392,9 @@ file_put_contents($dir_to_save . $result->getFileName() . ".pdf", $content);
 		$contactId = $getContact->getContacts()[0]->getContactId();
 
 		$new = $this->createInvoices($xeroTenantId,$apiInstance,true);
-		$newInvoice = $new->getInvoices()[0];
+		$existingInvoice = $new->getInvoices()[0];
 
-//[Invoices:Create]
+//[Invoices:UpdateOrCreate]
 $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
 $contact->setContactId($contactId);
 
@@ -1409,24 +1409,14 @@ $invoice_1->setReference('Ref-' . $this->getRandNum())
 	->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCPAY)
 	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE);	
 array_push($arr_invoices, $invoice_1);
-	
-$invoice_2 = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
-$invoice_2->setReference('Ref-' . $this->getRandNum())
-	->setDueDate(new DateTime('2019-12-02'))
-	->setContact($contact)
-	->setLineItems($lineitems)
-	->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
-	->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCPAY)
-	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE);	
-array_push($arr_invoices, $invoice_2);
 
-array_push($arr_invoices, $newInvoice);
+array_push($arr_invoices, $existingInvoice);
 			
 $invoices = new XeroAPI\XeroPHP\Models\Accounting\Invoices;
 $invoices->setInvoices($arr_invoices);
 
 $result = $apiInstance->updateOrCreateInvoices($xeroTenantId,$invoices); 
-//[/Invoices:Create]
+//[/Invoices:UpdateOrCreate]
 		
 		$str = $str ."Create Invoice 1 total amount: " . $result->getInvoices()[0]->getTotal() ." and Create Invoice 2 total amount: " . $result->getInvoices()[1]->getTotal() . "<br>" ;
 
