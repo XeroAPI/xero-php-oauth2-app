@@ -23,7 +23,7 @@
    
     // If we don't have an authorization code then get one
     if (!isset($_GET['code'])) {
-        echo "NO CODE";
+        echo "Something went wrong, no authorization code found";
         header("Location: index.php?error=true");
         exit();
 
