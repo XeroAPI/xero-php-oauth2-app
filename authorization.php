@@ -21,29 +21,21 @@
 	    'urlResourceOwnerDetails' => 'https://api.xero.com/api.xro/2.0/Organisation'
 	]);
 
-	// If we don't have an authorization code then get one
-	if (!isset($_GET['code'])) {
-		$options = [
-	    	'scope' => ['openid email profile offline_access assets projects accounting.settings accounting.transactions accounting.contacts accounting.journals.read accounting.reports.read accounting.attachments']
-		];
+	
+	$options = [
+		'scope' => ['openid email profile offline_access assets projects accounting.settings accounting.transactions accounting.contacts accounting.journals.read accounting.reports.read accounting.attachments']
+	];
 
-	    // Fetch the authorization URL from the provider; this returns the urlAuthorize option and generates and applies any necessary parameters (e.g. state).
-	    $authorizationUrl = $provider->getAuthorizationUrl($options);
+	// Fetch the authorization URL from the provider; this returns the urlAuthorize option and generates and applies any necessary parameters (e.g. state).
+	$authorizationUrl = $provider->getAuthorizationUrl($options);
 
-	    // Get the state generated for you and store it to the session.
-	    $_SESSION['oauth2state'] = $provider->getState();
+	// Get the state generated for you and store it to the session.
+	$_SESSION['oauth2state'] = $provider->getState();
 
-	    // Redirect the user to the authorization URL.
-	    header('Location: ' . $authorizationUrl);
-	    exit();
+	// Redirect the user to the authorization URL.
+	header('Location: ' . $authorizationUrl);
+	exit();
 
-	// Check given state against previously stored one to mitigate CSRF attack
-	} elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state'])) {
-	    unset($_SESSION['oauth2state']);
-	    exit('Invalid state');
-	} else {
-
-	}
 ?>
 	<html>
 	<head>
