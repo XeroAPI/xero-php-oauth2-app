@@ -62,6 +62,7 @@ $provider = new \League\OAuth2\Client\Provider\GenericProvider([
 ```
 
 ## docker-compose
+* Have Docker & Docker Compose installed - https://docs.docker.com/compose/install/
 
 Run `docker-compose up` in the root directory of this repository to launch a local server.
 The server will be published to port `8080` by default:
