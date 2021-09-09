@@ -5,8 +5,8 @@
 
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 	$dotenv->load();
-	$clientId = getenv('CLIENT_ID');
-	$clientSecret = getenv('CLIENT_SECRET');
+	$clientId = getenv('A3D80B727A914FFFBAF92D62EE81786F');
+	$clientSecret = getenv('IA_UuPmCMW4rrsYDEco9ltuBsLr__OVqipphYD_dtR7zTHST');
 	$redirectUri = getenv('REDIRECT_URI');
 
     // Storage Classe uses sessions for storing token > extend to your DB of choice
