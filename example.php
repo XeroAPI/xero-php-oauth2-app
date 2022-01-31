@@ -2,6 +2,7 @@
 // Use this class to deserialize error caught
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
 use XeroAPI\XeroPHP\PayrollAuObjectSerializer;
+use XeroAPI\XeroPHP\FinanceObjectSerializer;
 
 class ExampleClass
 {
@@ -14,6 +15,12 @@ class ExampleClass
 		$apiInstance = $arg;
    	}
 
+/*
+Finance APIs
+Following methods demonstrate Xero's 
+Finance API endpoints
+https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/accounting-yaml/xero_accounting.yaml 
+*/
 
 /*
 PAYROLL AU APIs
@@ -76,7 +83,7 @@ $result = $payrollAuApi->createEmployee($xeroTenantId, $newEmployees);
 public function createPayrollAuLeaveApplications($xeroTenantId,$payrollAuApi,$returnObj=false)
 {
 	$str = '';
-	$employee = $this->createPayrollAuEmployees($xeroTenantId, $payrollAuApi, true);
+	$employee = $this->createPayrollAuEmployees($xeroTenantId, $payrollAuApi, true); 
 	$employeeId = $employee->getEmployees()[0]->getEmployeeId();
 	$leaveapplications = $payrollAuApi->getLeaveApplications($xeroTenantId);
 	$leaveTypeId = $leaveapplications->getLeaveApplications()[0]->getLeaveTypeId(); 
@@ -3219,6 +3226,107 @@ $result = $projectApi->getProjects($xeroTenantId);
 		}
 	}
 
+	public function getFinanceBalanceSheet($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+//[Finance:Read]
+$result = $financeApi->getFinancialStatementBalanceSheet($xeroTenantId);					
+//[/Finance:Read]
+
+$str = $str . "Get Financial Statement Balance Sheet: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getCashFlow($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+//[Finance:Read]
+$result = $financeApi->getFinancialStatementCashflow($xeroTenantId); 						
+//[/Finance:Read]
+
+		$str = $str . "Get Financial Statement Cash Flow: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getFinanceProfitAndLoss($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+	//[Finance:Read]
+	$result = $financeApi->getFinancialStatementProfitAndLoss($xeroTenantId); 						
+	//[/Finance:Read]
+
+		$str = $str . "Get Financial Statement Profit And Loss: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getFinanceTrialBalance($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+	//[Finance:Read]
+	$result = $financeApi->getFinancialStatementTrialBalance($xeroTenantId); 						
+	//[/Finance:Read]
+
+		$str = $str . "Get Financial Statement Trial Balance: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getRevenue($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+	//[Finance:Read]
+	$result = $financeApi->getFinancialStatementContactsRevenue($xeroTenantId); 						
+	//[/Finance:Read]
+
+		$str = $str . "Get Financial Statement Contacts Revenue: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getExpense($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+	//[Finance:Read]
+	$result = $financeApi->getFinancialStatementContactsExpense($xeroTenantId); 						
+	//[/Finance:Read]
+
+		$str = $str . "Get Financial Statement Contacts Expense: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
 
 // HELPERS METHODS
 	public function getRandNum()
