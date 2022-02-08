@@ -66,6 +66,18 @@ var endpoint = [
     {name: "---PAYROLL AU---",action:[{name: ""}]},
     {name: "PayrollAuEmployee",action:[{name: "Create"},{name: "Read"},{name: "Update"}]},
     {name: "PayrollAuLeaveApplication",action:[{name: "Create"}]},
+    {name: "---FINANCE---",action:[{name: ""}]},
+    {name: "AccountingActivityAccountUsage",action:[{name: "Read"}]},
+    {name: "AccountingActivityLockHistory",action:[{name: "Read"}]},
+    {name: "AccountingActivityReportHistory",action:[{name: "Read"}]},
+    {name: "AccountingActivityUserActivities",action:[{name: "Read"}]},
+    {name: "CashValidation",action:[{name: "Read"}]},
+    {name: "FinancialStatementBalanceSheet",action:[{name: "Read"}]},
+    {name: "FinancialStatementCashflow",action:[{name: "Read"}]},
+    {name: "FinancialStatementProfitAndLoss",action:[{name: "Read"}]},
+    {name: "FinancialStatementTrialBalance",action:[{name: "Read"}]},
+    {name: "FinancialStatementContactsRevenue",action:[{name: "Read"}]},
+    {name: "FinancialStatementContactsExpense",action:[{name: "Read"}]}
 ];
     
 function populateAction(currEndpoint,currAction) {

@@ -70,6 +70,11 @@
 	    $config
 	);
 
+	$financeApi = new XeroAPI\XeroPHP\Api\FinanceApi(
+	    new GuzzleHttp\Client(),
+	    $config
+	);
+
 	if (isset($_POST["endpoint"]) ) {
 		$endpoint = htmlspecialchars($_POST["endpoint"]);
 	} else {
@@ -872,6 +877,128 @@
 						case "Create":
 						echo $ex->createPayrollAuLeaveApplications($xeroTenantId,$payrollAuApi);
 						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AccountingActivityAccountUsage":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityAccountUsage($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AccountingActivityLockHistory":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityLockHistory($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AccountingActivityReportHistory":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityReportHistory($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+
+				 case "AccountingActivityUserActivities":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityUserActivities($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "CashValidation":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getCashValidation($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "FinancialStatementBalanceSheet":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getFinancialStatementBalanceSheet($xeroTenantId,$financeApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "FinancialStatementCashflow":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getFinancialStatementCashflow($xeroTenantId,$financeApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "FinancialStatementProfitAndLoss":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getFinancialStatementProfitAndLoss($xeroTenantId,$financeApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "FinancialStatementTrialBalance":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getFinancialStatementTrialBalance($xeroTenantId,$financeApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "FinancialStatementContactsRevenue":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getFinancialStatementContactsRevenue($xeroTenantId,$financeApi);
+				        break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "FinancialStatementContactsExpense":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getFinancialStatementContactsExpense($xeroTenantId,$financeApi);
+				        break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }

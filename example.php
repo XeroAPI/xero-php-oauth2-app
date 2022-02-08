@@ -2,6 +2,7 @@
 // Use this class to deserialize error caught
 use XeroAPI\XeroPHP\AccountingObjectSerializer;
 use XeroAPI\XeroPHP\PayrollAuObjectSerializer;
+use XeroAPI\XeroPHP\FinanceObjectSerializer;
 
 class ExampleClass
 {
@@ -76,7 +77,7 @@ $result = $payrollAuApi->createEmployee($xeroTenantId, $newEmployees);
 public function createPayrollAuLeaveApplications($xeroTenantId,$payrollAuApi,$returnObj=false)
 {
 	$str = '';
-	$employee = $this->createPayrollAuEmployees($xeroTenantId, $payrollAuApi, true);
+	$employee = $this->createPayrollAuEmployees($xeroTenantId, $payrollAuApi, true); 
 	$employeeId = $employee->getEmployees()[0]->getEmployeeId();
 	$leaveapplications = $payrollAuApi->getLeaveApplications($xeroTenantId);
 	$leaveTypeId = $leaveapplications->getLeaveApplications()[0]->getLeaveTypeId(); 
@@ -3219,6 +3220,202 @@ $result = $projectApi->getProjects($xeroTenantId);
 		}
 	}
 
+
+/*
+Finance APIs
+Following methods demonstrate Xero's 
+Finance API endpoints
+https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/finance-yaml/xero_finance.yaml 
+*/
+
+public function getAccountingActivityAccountUsage($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[AccountingActivityAccountUsage:Read]
+		$result = $financeApi->getAccountingActivityAccountUsage($xeroTenantId); 						
+		//[/AccountingActivityAccountUsage:Read]
+		$str = $str . "Get Accounting Activity Account Usage: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getAccountingActivityLockHistory($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[AccountingActivityLockHistory:Read]
+		$result = $financeApi->getAccountingActivityLockHistory($xeroTenantId); 						
+		//[/AccountingActivityLockHistory:Read]
+		$str = $str . "Get Accounting Activity Lock History: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+public function getAccountingActivityReportHistory($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[AccountingActivityReportHistory:Read]
+		$result = $financeApi->getAccountingActivityReportHistory($xeroTenantId); 						
+		//[/AccountingActivityReportHistory:Read]
+		$str = $str . "Get Accounting Activity Report History: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+public function getAccountingActivityUserActivities($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[AccountingActivityUserActivities:Read]
+		$result = $financeApi->getAccountingActivityUserActivities($xeroTenantId); 						
+		//[/AccountingActivityUserActivities:Read]
+		$str = $str . "Get Financial Statement Balance Sheet: <br>" . $result . "<br>";
+
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+
+public function getCashValidation($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[CashValidation:Read]
+		$result = $financeApi->getCashValidation($xeroTenantId); 						
+		//[/CashValidation:Read]
+		$resultstr ='';
+		foreach($result as $value){
+			//Print the element out.
+			$resultstr .= $value. '<br>';
+		}
+		$str = $str . "Get cash validation: <br>" . $resultstr . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+
+public function getFinancialStatementBalanceSheet($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementBalanceSheet:Read]
+		$result = $financeApi->getFinancialStatementBalanceSheet($xeroTenantId);					
+		//[/FinancialStatementBalanceSheet:Read]
+
+		$str = $str . "Get Financial Statement Balance Sheet: <br>" . $result . "<br>";
+		
+			if($returnObj) {
+				return $result;
+			} else {
+				return $str;
+			}
+	}
+
+	public function getFinancialStatementCashflow($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementCashflow:Read]
+		$result = $financeApi->getFinancialStatementCashflow($xeroTenantId); 						
+		//[/FinancialStatementCashflow:Read]
+
+		$str = $str . "Get Financial Statement Cash Flow: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getFinancialStatementProfitAndLoss($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementProfitAndLoss:Read]
+		$result = $financeApi->getFinancialStatementProfitAndLoss($xeroTenantId); 						
+		//[/FinancialStatementProfitAndLoss:Read]
+
+		$str = $str . "Get Financial Statement Profit And Loss: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getFinancialStatementTrialBalance($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementTrialBalance:Read]
+		$result = $financeApi->getFinancialStatementTrialBalance($xeroTenantId); 						
+		//[/FinancialStatementTrialBalance:Read]
+
+		$str = $str . "Get Financial Statement Trial Balance: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getFinancialStatementContactsRevenue($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementContactsRevenue:Read]
+		$result = $financeApi->getFinancialStatementContactsRevenue($xeroTenantId); 						
+		//[/FinancialStatementContactsRevenue:Read]
+
+		$str = $str . "Get Financial Statement Contacts Revenue: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getFinancialStatementContactsExpense($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementContactsExpense:Read]
+		$result = $financeApi->getFinancialStatementContactsExpense($xeroTenantId); 						
+		//[/FinancialStatementContactsExpense:Read]
+
+		$str = $str . "Get Financial Statement Contacts Expense: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
 
 // HELPERS METHODS
 	public function getRandNum()
