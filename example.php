@@ -15,12 +15,6 @@ class ExampleClass
 		$apiInstance = $arg;
    	}
 
-/*
-Finance APIs
-Following methods demonstrate Xero's 
-Finance API endpoints
-https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/accounting-yaml/xero_accounting.yaml 
-*/
 
 /*
 PAYROLL AU APIs
@@ -3226,15 +3220,22 @@ $result = $projectApi->getProjects($xeroTenantId);
 		}
 	}
 
-	public function getFinanceBalanceSheet($xeroTenantId,$financeApi,$returnObj=false)
+
+/*
+Finance APIs
+Following methods demonstrate Xero's 
+Finance API endpoints
+https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/master/finance-yaml/xero_finance.yaml 
+*/
+
+public function getAccountingActivityAccountUsage($xeroTenantId,$financeApi,$returnObj=false)
 	{
 		$str = '';
 
-//[Finance:Read]
-$result = $financeApi->getFinancialStatementBalanceSheet($xeroTenantId);					
-//[/Finance:Read]
-
-$str = $str . "Get Financial Statement Balance Sheet: <br>" . $result . "<br>";
+		//[AccountingActivityAccountUsage:Read]
+		$result = $financeApi->getAccountingActivityAccountUsage($xeroTenantId); 						
+		//[/AccountingActivityAccountUsage:Read]
+		$str = $str . "Get Accounting Activity Account Usage: <br>" . $result . "<br>";
 		
 		if($returnObj) {
 			return $result;
@@ -3243,13 +3244,101 @@ $str = $str . "Get Financial Statement Balance Sheet: <br>" . $result . "<br>";
 		}
 	}
 
-	public function getCashFlow($xeroTenantId,$financeApi,$returnObj=false)
+	public function getAccountingActivityLockHistory($xeroTenantId,$financeApi,$returnObj=false)
 	{
 		$str = '';
 
-//[Finance:Read]
-$result = $financeApi->getFinancialStatementCashflow($xeroTenantId); 						
-//[/Finance:Read]
+		//[AccountingActivityLockHistory:Read]
+		$result = $financeApi->getAccountingActivityLockHistory($xeroTenantId); 						
+		//[/AccountingActivityLockHistory:Read]
+		$str = $str . "Get Accounting Activity Lock History: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+public function getAccountingActivityReportHistory($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[AccountingActivityReportHistory:Read]
+		$result = $financeApi->getAccountingActivityReportHistory($xeroTenantId); 						
+		//[/AccountingActivityReportHistory:Read]
+		$str = $str . "Get Accounting Activity Report History: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+public function getAccountingActivityUserActivities($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[AccountingActivityUserActivities:Read]
+		$result = $financeApi->getAccountingActivityUserActivities($xeroTenantId); 						
+		//[/AccountingActivityUserActivities:Read]
+		$str = $str . "Get Financial Statement Balance Sheet: <br>" . $result . "<br>";
+
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+
+public function getCashValidation($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[CashValidation:Read]
+		$result = $financeApi->getCashValidation($xeroTenantId); 						
+		//[/CashValidation:Read]
+		$resultstr ='';
+		foreach($result as $value){
+			//Print the element out.
+			$resultstr .= $value. '<br>';
+		}
+		$str = $str . "Get cash validation: <br>" . $resultstr . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+
+public function getFinancialStatementBalanceSheet($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementBalanceSheet:Read]
+		$result = $financeApi->getFinancialStatementBalanceSheet($xeroTenantId);					
+		//[/FinancialStatementBalanceSheet:Read]
+
+		$str = $str . "Get Financial Statement Balance Sheet: <br>" . $result . "<br>";
+		
+			if($returnObj) {
+				return $result;
+			} else {
+				return $str;
+			}
+	}
+
+	public function getFinancialStatementCashflow($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[FinancialStatementCashflow:Read]
+		$result = $financeApi->getFinancialStatementCashflow($xeroTenantId); 						
+		//[/FinancialStatementCashflow:Read]
 
 		$str = $str . "Get Financial Statement Cash Flow: <br>" . $result . "<br>";
 		
@@ -3260,13 +3349,13 @@ $result = $financeApi->getFinancialStatementCashflow($xeroTenantId);
 		}
 	}
 
-	public function getFinanceProfitAndLoss($xeroTenantId,$financeApi,$returnObj=false)
+	public function getFinancialStatementProfitAndLoss($xeroTenantId,$financeApi,$returnObj=false)
 	{
 		$str = '';
 
-	//[Finance:Read]
-	$result = $financeApi->getFinancialStatementProfitAndLoss($xeroTenantId); 						
-	//[/Finance:Read]
+		//[FinancialStatementProfitAndLoss:Read]
+		$result = $financeApi->getFinancialStatementProfitAndLoss($xeroTenantId); 						
+		//[/FinancialStatementProfitAndLoss:Read]
 
 		$str = $str . "Get Financial Statement Profit And Loss: <br>" . $result . "<br>";
 		
@@ -3277,13 +3366,13 @@ $result = $financeApi->getFinancialStatementCashflow($xeroTenantId);
 		}
 	}
 
-	public function getFinanceTrialBalance($xeroTenantId,$financeApi,$returnObj=false)
+	public function getFinancialStatementTrialBalance($xeroTenantId,$financeApi,$returnObj=false)
 	{
 		$str = '';
 
-	//[Finance:Read]
-	$result = $financeApi->getFinancialStatementTrialBalance($xeroTenantId); 						
-	//[/Finance:Read]
+		//[FinancialStatementTrialBalance:Read]
+		$result = $financeApi->getFinancialStatementTrialBalance($xeroTenantId); 						
+		//[/FinancialStatementTrialBalance:Read]
 
 		$str = $str . "Get Financial Statement Trial Balance: <br>" . $result . "<br>";
 		
@@ -3294,13 +3383,13 @@ $result = $financeApi->getFinancialStatementCashflow($xeroTenantId);
 		}
 	}
 
-	public function getRevenue($xeroTenantId,$financeApi,$returnObj=false)
+	public function getFinancialStatementContactsRevenue($xeroTenantId,$financeApi,$returnObj=false)
 	{
 		$str = '';
 
-	//[Finance:Read]
-	$result = $financeApi->getFinancialStatementContactsRevenue($xeroTenantId); 						
-	//[/Finance:Read]
+		//[FinancialStatementContactsRevenue:Read]
+		$result = $financeApi->getFinancialStatementContactsRevenue($xeroTenantId); 						
+		//[/FinancialStatementContactsRevenue:Read]
 
 		$str = $str . "Get Financial Statement Contacts Revenue: <br>" . $result . "<br>";
 		
@@ -3311,13 +3400,13 @@ $result = $financeApi->getFinancialStatementCashflow($xeroTenantId);
 		}
 	}
 
-	public function getExpense($xeroTenantId,$financeApi,$returnObj=false)
+	public function getFinancialStatementContactsExpense($xeroTenantId,$financeApi,$returnObj=false)
 	{
 		$str = '';
 
-	//[Finance:Read]
-	$result = $financeApi->getFinancialStatementContactsExpense($xeroTenantId); 						
-	//[/Finance:Read]
+		//[FinancialStatementContactsExpense:Read]
+		$result = $financeApi->getFinancialStatementContactsExpense($xeroTenantId); 						
+		//[/FinancialStatementContactsExpense:Read]
 
 		$str = $str . "Get Financial Statement Contacts Expense: <br>" . $result . "<br>";
 		

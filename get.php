@@ -882,80 +882,122 @@
 				    }
 				 break;
 
+				 case "AccountingActivityAccountUsage":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityAccountUsage($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AccountingActivityLockHistory":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityLockHistory($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "AccountingActivityReportHistory":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityReportHistory($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+
+				 case "AccountingActivityUserActivities":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAccountingActivityUserActivities($xeroTenantId,$financeApi);
+						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
 				 case "CashValidation":
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getCashValidation($xeroTenantId,$payrollAuApi);
-						break;
-						case "Create":
-						echo $ex->createCashValidations($xeroTenantId,$payrollAuApi);
+				        echo $ex->getCashValidation($xeroTenantId,$financeApi);
 						break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
 
-				 case "FinanceBalanceSheet":
+				 case "FinancialStatementBalanceSheet":
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getFinanceBalanceSheet($xeroTenantId,$financeApi);
+				        echo $ex->getFinancialStatementBalanceSheet($xeroTenantId,$financeApi);
 				        break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
 
-				 case "CashFlow":
+				 case "FinancialStatementCashflow":
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getCashFlow($xeroTenantId,$financeApi);
+				        echo $ex->getFinancialStatementCashflow($xeroTenantId,$financeApi);
 				        break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
 
-				 case "ProfitAndLoss":
+				 case "FinancialStatementProfitAndLoss":
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getFinanceProfitAndLoss($xeroTenantId,$financeApi);
+				        echo $ex->getFinancialStatementProfitAndLoss($xeroTenantId,$financeApi);
 				        break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
 
-				 case "TrialBalance":
+				 case "FinancialStatementTrialBalance":
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getFinanceTrialBalance($xeroTenantId,$financeApi);
+				        echo $ex->getFinancialStatementTrialBalance($xeroTenantId,$financeApi);
 				        break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
 
-				 case "Revenue":
+				 case "FinancialStatementContactsRevenue":
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getRevenue($xeroTenantId,$financeApi);
+				        echo $ex->getFinancialStatementContactsRevenue($xeroTenantId,$financeApi);
 				        break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
 
-				 case "Expense":
+				 case "FinancialStatementContactsExpense":
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getExpense($xeroTenantId,$financeApi);
+				        echo $ex->getFinancialStatementContactsExpense($xeroTenantId,$financeApi);
 				        break;
 				       	default:
 					    echo $action . " action not supported in API";
