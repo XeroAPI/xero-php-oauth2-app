@@ -3417,6 +3417,23 @@ public function getFinancialStatementBalanceSheet($xeroTenantId,$financeApi,$ret
 		}
 	}
 
+	public function getBankStatementAccounting($xeroTenantId,$financeApi,$returnObj=false)
+	{
+		$str = '';
+
+		//[BankStatementAccounting:Read]
+		$result = $financeApi->getBankStatementAccounting($xeroTenantId); 						
+		//[/BankStatementAccounting:Read]
+
+		$str = $str . "Get Bank Statement Accounting: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
 // HELPERS METHODS
 	public function getRandNum()
 	{
