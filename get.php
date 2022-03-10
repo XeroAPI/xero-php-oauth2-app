@@ -1008,7 +1008,7 @@
 					switch($action)
 				{
 						case "Read":
-							echo $ex->getBankStatementAccounting($xeroTenantId,$financeApi);
+							echo $ex->getBankStatementAccounting($xeroTenantId,$financeApi,$accountingApi);
 							break;
 							 default:
 						echo $action . " action not supported in API";
