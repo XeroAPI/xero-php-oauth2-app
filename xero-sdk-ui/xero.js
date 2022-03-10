@@ -77,7 +77,8 @@ var endpoint = [
     {name: "FinancialStatementProfitAndLoss",action:[{name: "Read"}]},
     {name: "FinancialStatementTrialBalance",action:[{name: "Read"}]},
     {name: "FinancialStatementContactsRevenue",action:[{name: "Read"}]},
-    {name: "FinancialStatementContactsExpense",action:[{name: "Read"}]}
+    {name: "FinancialStatementContactsExpense",action:[{name: "Read"}]},
+    {name: "BankStatementAccounting",action:[{name: "Read"}]}
 ];
     
 function populateAction(currEndpoint,currAction) {

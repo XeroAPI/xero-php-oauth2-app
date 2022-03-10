@@ -3417,6 +3417,31 @@ public function getFinancialStatementBalanceSheet($xeroTenantId,$financeApi,$ret
 		}
 	}
 
+	public function getBankStatementAccounting($xeroTenantId,$financeApi,$accountingApi,$returnObj=false)
+	{
+		$str = '';
+	
+		$fromDate = new DateTime('2022-01-10');
+		$fromDatestr = $fromDate->format('Y-m-d');
+		$toDate = new DateTime('2022-02-10');
+		$toDatestr = $toDate->format('Y-m-d');
+	
+		$getAccount = $this->getBankAccount($xeroTenantId,$accountingApi,true);
+		$bankAccountId = $getAccount->getAccounts()[0]->getAccountId();
+
+		//[BankStatementAccounting:Read]
+		$result = $financeApi->getBankStatementAccounting($xeroTenantId,$bankAccountId,$fromDatestr,$toDatestr); 						
+		//[/BankStatementAccounting:Read]
+
+		$str = $str . "Get Bank Statement Accounting: <br>" . $result . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
 // HELPERS METHODS
 	public function getRandNum()
 	{
