@@ -24,6 +24,7 @@
 	
 	$options = [
 		'scope' => ['openid email profile offline_access assets projects accounting.settings accounting.transactions accounting.contacts accounting.journals.read accounting.reports.read accounting.attachments']
+		// finance.accountingactivity.read finance.bankstatementsplus.read finance.cashvalidation.read finance.statements.read
 	];
 
 	// Fetch the authorization URL from the provider; this returns the urlAuthorize option and generates and applies any necessary parameters (e.g. state).
