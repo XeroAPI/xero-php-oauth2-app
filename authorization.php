@@ -42,6 +42,6 @@
 		<title>My App</title>
 	</head>
 	<body>
-		Opps! Problem redirecting .....
+		Oops! Problem redirecting .....
 	</body>
 </html>
