@@ -37,7 +37,7 @@ var endpoint = [
     {name: "Invoices",action:[{name: "Create"},{name: "UpdateOrCreate"},{name: "ReadPdf"},{name: "Read"},{name: "Update"},{name: "Delete"},{name: "Void"}]},
     {name: "InvoiceReminders",action:[{name: "Read"}]},
     {name: "Items",action:[{name: "Create"},{name: "CreateMulti"},{name: "Read"},{name: "Update"},{name: "Delete"}]},
-    {name: "Journals",action:[{name: "Read"}]},
+    {name: "Journals",action:[{name: "Read all"}, {name: "Read one by number"}]},
     {name: "LinkedTransactions",action:[{name: "Create"},{name: "Read"},{name: "Update"},{name: "Delete"}]},
     {name: "ManualJournals",action:[{name: "Create"},{name: "CreateMulti"},{name: "Read"},{name: "Update"}]},
     {name: "Organisations",action:[{name: "Read"}]},

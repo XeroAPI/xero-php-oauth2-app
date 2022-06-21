@@ -1670,11 +1670,29 @@ $result = $apiInstance->deleteItem($xeroTenantId,$itemId);
 	public function getJournal($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
-//[Journals:Read]
+//[Journals:Read all]
 // READ ALL 
 $result = $apiInstance->getJournals($xeroTenantId); 						
-//[/Journals:Read]
+//[/Journals:Read all]
 		$str = $str . "Get Journals total: " . count($result->getJournals()) . "<br>";
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+	public function getJournalByNumber($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+		$journals = $apiInstance->getJournals($xeroTenantId);
+		$journalNumber = $journals->getJournals()[0]->getJournalNumber();
+//[Journals:Read one by number]
+// READ ALL 
+$result = $apiInstance->getJournalByNumber($xeroTenantId, $journalNumber); 						
+//[/Journals:Read one by number]
+		$str = $str . "Get Journal by Number " . $journalNumber . ": <br>" . $result . "<br>";
 		
 		if($returnObj) {
 			return $result;

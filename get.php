@@ -455,9 +455,12 @@
 				 case "Journals":
 				    switch($action)
 					{
-				    	case "Read":
+				    	case "Read all":
 				        echo $ex->getJournal($xeroTenantId,$accountingApi);
 				        break;
+							case "Read one by number":
+								echo $ex->getJournalByNumber($xeroTenantId,$accountingApi);
+								break;
 				    	default:
 					    echo $action . " action not supported in API";
 				    }
