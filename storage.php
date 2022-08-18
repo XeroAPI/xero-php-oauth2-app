@@ -20,7 +20,7 @@ class StorageClass
        	session_start();
 	}
 
-	public function setToken($token, $expires = null, $tenantId, $refreshToken, $idToken)
+	public function setToken($token, $expires = null, $tenantId = null, $refreshToken = null, $idToken = null)
 	{    
 	    $_SESSION['oauth2'] = [
 	        'token' => $token,

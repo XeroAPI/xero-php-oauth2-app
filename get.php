@@ -87,7 +87,6 @@
 		$action = "none";
 	}
 
-	// Parse the example.php file to find matching endpoint/method combination
 	// and display the code that was just executed on the screen.
 	$file = file_get_contents('./example.php', true);
 
@@ -112,14 +111,15 @@
 	<script src="xero-sdk-ui/xero.js"  crossorigin="anonymous"></script>
 	<script type="text/javascript">
 	   	document.addEventListener("DOMContentLoaded", function() {
-			loadGet("xero-php sample app","disconnect.php","get.php","<?php echo($endpoint) ?>", "<?php echo($action) ?>");
+			loadGet("xero-php sample app ","disconnect.php","get.php","<?php echo($endpoint) ?>", "<?php echo($action) ?>");
 		});
    	</script>
 </head>
 <body>
-
+   
 	<div id="req" class="container"></div>
 	<div id="res" class="container">	
+	<pre><?php echo print_r($storage->getSession(), true);?></pre> 
 		<h3><?php echo($endpoint);?></h3>
 		<hr>
 
@@ -132,9 +132,6 @@
 			try {
 			switch($endpoint)
 			{
-
-
-
 				
 				case "Connection":
 				    switch($action)
@@ -649,9 +646,12 @@
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getRepeatingInvoice($xeroTenantId,$accountingApi);
-				        break;
-				    	default:
+				        	echo $ex->getRepeatingInvoice($xeroTenantId,$accountingApi);
+				        	break;
+				    	case "Create":
+							echo $ex->createRepeatingInvoices($xeroTenantId,$accountingApi);
+							break;
+						default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
@@ -841,7 +841,10 @@
 						case "Update":
 						echo $ex->updateProject($xeroTenantId,$projectApi,$accountingApi);
 						break;
-				       	default:
+						case "Patch":
+						echo $ex->patchProject($xeroTenantId,$projectApi,$accountingApi);
+						break;
+						default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
@@ -1016,7 +1019,73 @@
 							 default:
 						echo $action . " action not supported in API";
 					}
-			 break;
+				 case "BankStatementAccounting":
+					switch($action)
+				{
+						case "Read":
+							echo $ex->getBankStatementAccounting($xeroTenantId,$financeApi,$accountingApi);
+							break;
+							 default:
+						echo $action . " action not supported in API";
+				}
+				break;
+
+				case "Tasks":
+						switch($action)
+					{
+							case "Read":
+								echo $ex->getTasks($xeroTenantId, $projectApi);
+								break;
+							case "Create":
+								echo $ex->createTask($xeroTenantId, $projectApi);
+								break;
+							case "Update":
+								echo $ex->updateTask($xeroTenantId, $projectApi);
+								break;	
+							case "Delete":
+								echo $ex->deleteTask($xeroTenantId, $projectApi);
+								break;	
+								default:
+							echo $action . " action not supported in API";
+
+
+						}
+						break;
+		
+						case "TimeEntries":
+							switch($action)
+						{
+								case "Read":
+									echo $ex->getTimeEntries($xeroTenantId, $projectApi);
+									break;	
+									default:
+								echo $action . " action not supported in API";
+	
+						}		
+				 break;
+
+				 case "TimeEntry":
+					switch($action)
+				{
+						case "Read":
+							echo $ex->getTimeEntry($xeroTenantId, $projectApi);
+							break;
+						case "Create":
+							echo $ex->createTimeEntry($xeroTenantId, $projectApi);
+							break;
+						case "Update":
+							echo $ex->updateTimeEntry($xeroTenantId, $projectApi);
+							break;	
+						case "Delete":
+							echo $ex->deleteTimeEntry($xeroTenantId, $projectApi);
+							break;	
+							default:
+						echo $action . " action not supported in API";
+
+
+					}		
+
+				 break;
 
 			}
 
