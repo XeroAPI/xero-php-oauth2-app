@@ -1403,7 +1403,7 @@ $arr_invoices = [];
 
 $invoice_1 = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
 $invoice_1->setReference('Ref-' . $this->getRandNum())
-	->setDueDate(new DateTime('2019-12-10'))
+	->setDueDate(new DateTime('2022-12-10'))
 	->setContact($contact)
 	->setLineItems($lineitems)
 	->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
@@ -1420,6 +1420,7 @@ $result = $apiInstance->updateOrCreateInvoices($xeroTenantId,$invoices);
 //[/Invoices:UpdateOrCreate]
 		
 		$str = $str ."Create Invoice 1 total amount: " . $result->getInvoices()[0]->getTotal() ." and Create Invoice 2 total amount: " . $result->getInvoices()[1]->getTotal() . "<br>" ;
+		$str = $str ." Invoice 2 InvoiceID : " . $result->getInvoices()[1]->getInvoiceId() . " Invoice Number : " . $result->getInvoices()[1]->getInvoiceNumber() .  "<br>" ;
 
 		if($returnObj) {
 			return $result;
@@ -1447,12 +1448,15 @@ $contact->setContactId($contactId);
 $arr_invoices = [];	
 
 $invoice_1 = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
-$invoice_1->setReference('Ref-' . $this->getRandNum())
-	->setDueDate(new DateTime('2019-12-10'))
+$invoice_1->setReference('Ref--' . $this->getRandNum())
+	->setDueDate(new DateTime('2022-12-26'))
 	->setContact($contact)
-	->setLineItems($lineitems)
+	//->setLineItems($lineitems)
+	->setSubTotal(90)
+	->setTotalTax(18.76)
+	->setTotal(108.76)
 	->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
-	->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCPAY)
+	->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC)
 	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE);	
 array_push($arr_invoices, $invoice_1);
 	
@@ -1473,6 +1477,7 @@ $result = $apiInstance->createInvoices($xeroTenantId,$invoices);
 //[/Invoices:Create]
 		
 		$str = $str ."Create Invoice 1 total amount: " . $result->getInvoices()[0]->getTotal() ." and Create Invoice 2 total amount: " . $result->getInvoices()[1]->getTotal() . "<br>" ;
+		$str = $str ." InvoiceID : " . $result->getInvoices()[0]->getInvoiceId() . " Invoice Number : " . $result->getInvoices()[0]->getInvoiceNumber() .  "<br>" ;
 
 		if($returnObj) {
 			return $result;
@@ -2624,10 +2629,13 @@ $result = $apiInstance->updateReceipt($xeroTenantId,$receiptId,$receipts);
 	{
 		$str = '';
 
-//[RepeatingInvoices:Read]
-// READ ALL 
-$result = $apiInstance->getRepeatingInvoices($xeroTenantId); 						
-//[/RepeatingInvoices:Read]
+	//[RepeatingInvoices:Read]
+	// READ ALL 
+	//where and order 
+	$where = 'Status=="AUTHORISED"&&Total>0';
+	$result = $apiInstance->getRepeatingInvoices($xeroTenantId, $where); 						
+	//[/RepeatingInvoices:Read]
+
 		$str = $str . "Get RepeatingInvoices: " . count($result->getRepeatingInvoices()) . "<br>";
 		
 		if($returnObj) {
@@ -2636,6 +2644,126 @@ $result = $apiInstance->getRepeatingInvoices($xeroTenantId);
 			return $str;
 		}
 	}
+
+	public function createRepeatingInvoice($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+       //[RepeatingInvoices:Create]
+	   $getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+	   $contactId = $getContact->getContacts()[0]->getContactId();						
+	   $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+	   $contact->setContactId($contactId);
+	   
+	   $lineitems = [];	
+	   $lineitem = $this->getLineItem($xeroTenantId,$apiInstance);	
+		array_push($lineitems, $lineitem);
+	   // CREATE SCHEDULE
+
+	   $schedule = new XeroAPI\XeroPHP\Models\Accounting\Schedule;
+	   $schedule->setPeriod(2) //Integer used with the unit e.g. 1 (every 1 week), 2 (every 2 months)
+	            ->setUnit("MONTHLY") //can be WEEKLY
+				->setDueDate(5) //integer dependent on DueDateType
+				->setDueDateType("DAYSAFTERBILLDATE")  //e.g. DAYSAFTERBILLDATE, DAYSAFTERBILLMONTH, OFCURRENTMONTH,OFFOLLOWINGMONTH
+				->setNextScheduledDate(new DateTime('2022-09-02'));
+				//->setEndDate(); //optional
+				
+       // CREATE REPEATING INVOICE
+	   $repeat_invoice = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoice;
+	   $repeat_invoice->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC)
+	           ->setSchedule($schedule)
+			   ->setContact($contact)
+			   ->setLineItems($lineitems)
+			   ->setLineAmountTypes("Inclusive")
+			   ->setReference("RP4789")
+			   ->setCurrencyCode("GBP")
+			   ->setStatus("DRAFT")
+			   ->setApprovedForSending(false); //boolean - can be true only if Status is AUTHORISED
+			   
+		$repeat_invoices = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoices;
+		$arr_repeat_invoices = [];
+		 array_push($arr_repeat_invoices, $repeat_invoice);
+		$repeat_invoices->setRepeatingInvoices($arr_repeat_invoices);
+		$result = $apiInstance->createRepeatingInvoices($xeroTenantId,$repeat_invoices, true); 
+		//[/RepeatingInvoices:Create]	 			   
+		  //$str .= print_r($result, true);
+				 $str .= "Create Repeat Invoice total amount: " . $result->getRepeatingInvoices()[0]->getTotal() . "<br>" ;
+				 $str .= "Create Repeat Invoice Id: " . $result->getRepeatingInvoices()[0]->getId() . "<br>" ;
+					   if($returnObj) {
+						   return $result;
+					   } else {
+						   return $str;
+					   }
+     
+	}
+
+	public function updateRepeatingInvoice($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+       //[RepeatingInvoices:Update]
+	   $getContact = $this->getContacts($xeroTenantId,$apiInstance,true);
+	   $contactId = $getContact->getContacts()[0]->getContactId();						
+	   $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+	   $contact->setContactId($contactId);
+
+	   $where = 'Status=="DRAFT"&&Total>0';
+	   $result = $apiInstance->getRepeatingInvoices($xeroTenantId, $where); 
+
+	   $repeat_invoice_id = $result->getRepeatingInvoices()[0]->getId();
+	   $str .= "Update for Invoice Id:" . $repeat_invoice_id  . "<br>" ;
+
+       // UPDATE THE SCHEDULE
+ 	   $schedule = new XeroAPI\XeroPHP\Models\Accounting\Schedule;
+ 	   $schedule->setPeriod(1) //Integer used with the unit e.g. 1 (every 1 week), 2 (every 2 months)
+		  ->setUnit("MONTHLY") //can be WEEKLY
+		  ->setDueDate(15) //integer dependent on DueDateType
+		  ->setDueDateType(XeroAPI\XeroPHP\Models\Accounting\Schedule::DUE_DATE_TYPE_DAYSAFTERBILLMONTH)  //e.g. DAYSAFTERBILLDATE, DAYSAFTERBILLMONTH, OFCURRENTMONTH,OFFOLLOWINGMONTH
+		  ->setNextScheduledDate(new DateTime('2022-09-01'));
+		  //->setEndDate(); //optional
+		  
+		// UPDATE REPEATING INVOICE - JUST THE SCHEDULE
+		$repeat_invoice = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoice;
+		$repeat_invoice->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC)
+				->setSchedule($schedule)
+				->setContact($contact)
+				->setId($repeat_invoice_id)
+				->setStatus("AUTHORISED")
+				->setApprovedForSending(true); //boolean
+				
+		$repeat_invoices = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoices;
+		$arr_repeat_invoices = [];
+		array_push($arr_repeat_invoices, $repeat_invoice);
+		$repeat_invoices->setRepeatingInvoices($arr_repeat_invoices);	 
+		
+		$result = $apiInstance->updateOrCreateRepeatingInvoices($xeroTenantId,$repeat_invoices); 
+		
+		//[/RepeatingInvoices:Update]
+					   
+		  $str .= print_r($result, true);
+
+				 //$str .= "Updated Repeat Invoice total amount: " . $result->getRepeatingInvoices()[0]->getTotal() . "<br>" ;
+				 //$str .= "Updated Repeat Invoice Id: " . $result->getRepeatingInvoices()[0]->getId() . "<br>" ;
+				 //$str .= "Updated Repeat Status: " . $result->getRepeatingInvoices()[0]->getStatus() . "<br>" ;
+					   if($returnObj) {
+						   return $result;
+					   } else {
+						   return $str;
+					   }
+
+	   
+
+	}	
+
+	public function getRepeatingInvoiceHistory($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+
+	}
+
+	public function createRepeatingInvoiceHistory($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+
+	}	
 
 // REPORTS
 	public function getTenNinetyNine($xeroTenantId,$apiInstance)
@@ -3475,7 +3603,7 @@ public function getFinancialStatementBalanceSheet($xeroTenantId,$financeApi,$ret
 		$lineitem->setDescription('Sample Item' . $this->getRandNum())
 			->setQuantity(1)
 			->setUnitAmount(20)
-			->setAccountCode("400");
+			->setAccountCode("200");
 
 		return $lineitem;
 	}	

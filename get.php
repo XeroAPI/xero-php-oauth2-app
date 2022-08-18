@@ -120,6 +120,7 @@
 
 	<div id="req" class="container"></div>
 	<div id="res" class="container">	
+
 		<h3><?php echo($endpoint);?></h3>
 		<hr>
 
@@ -648,11 +649,17 @@
 				 case "RepeatingInvoices":
 				    switch($action)
 					{
-				    	case "Read":
-				        echo $ex->getRepeatingInvoice($xeroTenantId,$accountingApi);
-				        break;
-				    	default:
-					    echo $action . " action not supported in API";
+				    	case "Create":
+							echo $ex->createRepeatingInvoice($xeroTenantId,$accountingApi);
+							break;
+							case "Read":
+							echo $ex->getRepeatingInvoice($xeroTenantId,$accountingApi);
+							break;
+							case "Update":
+							echo $ex->updateRepeatingInvoice($xeroTenantId,$accountingApi);
+							break;
+							default:
+							echo $action . " action not supported in API";
 				    }
 				 break;
 
