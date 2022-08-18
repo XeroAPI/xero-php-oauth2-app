@@ -646,9 +646,12 @@
 				    switch($action)
 					{
 				    	case "Read":
-				        echo $ex->getRepeatingInvoice($xeroTenantId,$accountingApi);
-				        break;
-				    	default:
+				        	echo $ex->getRepeatingInvoice($xeroTenantId,$accountingApi);
+				        	break;
+				    	case "Create":
+							echo $ex->createRepeatingInvoices($xeroTenantId,$accountingApi);
+							break;
+						default:
 					    echo $action . " action not supported in API";
 				    }
 				 break;
@@ -1024,8 +1027,10 @@
 							break;
 							 default:
 						echo $action . " action not supported in API";
-					}
-				 case "Tasks":
+				}
+				break;
+
+				case "Tasks":
 						switch($action)
 					{
 							case "Read":
@@ -1044,8 +1049,43 @@
 							echo $action . " action not supported in API";
 
 
+						}
+						break;
+		
+						case "TimeEntries":
+							switch($action)
+						{
+								case "Read":
+									echo $ex->getTimeEntries($xeroTenantId, $projectApi);
+									break;	
+									default:
+								echo $action . " action not supported in API";
+	
 						}		
-			 break;
+				 break;
+
+				 case "TimeEntry":
+					switch($action)
+				{
+						case "Read":
+							echo $ex->getTimeEntry($xeroTenantId, $projectApi);
+							break;
+						case "Create":
+							echo $ex->createTimeEntry($xeroTenantId, $projectApi);
+							break;
+						case "Update":
+							echo $ex->updateTimeEntry($xeroTenantId, $projectApi);
+							break;	
+						case "Delete":
+							echo $ex->deleteTimeEntry($xeroTenantId, $projectApi);
+							break;	
+							default:
+						echo $action . " action not supported in API";
+
+
+					}		
+
+				 break;
 
 			}
 
