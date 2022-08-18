@@ -147,8 +147,8 @@ $result = $identityApi->deleteConnection($id);
 		if ($returnObj) {
 			return $result;
 		} else {
-			$str = $str . "Connected tenants " . array_reduce($result, function ($carry, $item) {#
-					return trim($carry . ' ' . $item->getTenantId() . ' = "'. $item->getTenantName() . '"');
+			$str = $str . "Connected tenants " . '<br>' . array_reduce($result, function ($carry, $item) {#
+					return trim($carry . ' ' . $item->getTenantId() . ' = "'. $item->getTenantName() . '"' . '<br>');
 				}) . '<br>';
 			return $str;
 		}
@@ -327,13 +327,17 @@ file_put_contents($dir_to_save . $savedFileName , $content);
 $result = $apiInstance->getAccounts($xeroTenantId); 						
 
 // filter for only active
-$where = 'Status=="ACTIVE"';
+//$where = 'Status=="ACTIVE"&&Type=="BANK"';
+$where = 'Status=="ACTIVE"&&EnablePaymentsToAccount==true';
 $result2 = $apiInstance->getAccounts($xeroTenantId, null, $where); 
 //[/Accounts:Read]
 
 		if($returnObj) {
 			return $result;
 		} else {
+			//($result2->getAccounts(), true);
+			//echo print_r($result2->getAccounts(), true);
+			echo '<pre>'; print_r($result2->getAccounts()); echo '</pre>';
 			$str = $str . "Get accounts total: " . count($result->getAccounts()) . "<br>";
 			$str = $str . "Get ACTIVE accounts total: " . count($result2->getAccounts()) . "<br>";
 			return $str;
@@ -2048,9 +2052,15 @@ $result = $apiInstance->getPayments($xeroTenantId);
 
 		$newInv = $this->createInvoiceAccRec($xeroTenantId,$apiInstance,true);
 		$invoiceId = $newInv->getInvoices()[0]->getInvoiceID();
+		$invoiceId = '21b2fb1d-a577-487b-8bbb-e8a7494606e4';
+		//echo '<pre>' . print_r($newInv->getInvoices()[0], true) . '</pre>';
+		
+		//$invoiceNumber = $newInv->getInvoices()[0]->
 		$newAcct = $this->getBankAccount($xeroTenantId,$apiInstance);
 		$accountId = $newAcct->getAccounts()[0]->getAccountId();
-
+		
+		$str = $str . "Create on Bank Account ID : " . $accountId . "<br>" ;
+		$str = $str . "Create on Invoice ID : " . $invoiceId . "<br>" ;
 //[Payments:Create]
 $invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
 $invoice->setInvoiceID($invoiceId);
@@ -2061,7 +2071,7 @@ $bankaccount->setAccountID($accountId);
 $payment = new XeroAPI\XeroPHP\Models\Accounting\Payment;
 $payment->setInvoice($invoice)
 	->setAccount($bankaccount)
-	->setAmount("2.00");
+	->setAmount("580.00");
 
 $result = $apiInstance->createPayment($xeroTenantId,$payment);
 //[/Payments:Create]
@@ -2316,9 +2326,9 @@ $purchaseorder_2->setReference('Ref original -' . $this->getRandNum())
 array_push($arr_purchaseorders, $purchaseorder_2);
 		
 $mypurchaseorders = new XeroAPI\XeroPHP\Models\Accounting\PurchaseOrders;
-$mypurchaseorders.setPurchaseOrders($arr_purchaseorders);
+$mypurchaseorders->setPurchaseOrders($arr_purchaseorders);
 
-$result = $apiInstance->createPurchaseOrders($xeroTenantId,$purchaseorders);
+$result = $apiInstance->createPurchaseOrders($xeroTenantId,$mypurchaseorders);
 //[/PurchaseOrders:Create]
 		
 		$str = $str . "Created PurchaseOrder Number: " . $result->getPurchaseOrders()[0]->getPurchaseOrderNumber() . " and Created PurchaseOrder Number: " . $result->getPurchaseOrders()[0]->getPurchaseOrderNumber() . "<br>" ;
@@ -2751,7 +2761,6 @@ $result = $apiInstance->updateReceipt($xeroTenantId,$receiptId,$receipts);
 						   return $str;
 					   }
 
-	   
 
 	}	
 
@@ -2762,6 +2771,59 @@ $result = $apiInstance->updateReceipt($xeroTenantId,$receiptId,$receipts);
 
 	public function createRepeatingInvoiceHistory($xeroTenantId,$apiInstance,$returnObj=false)
 	{
+	
+	}
+	
+	public function createRepeatingInvoices($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+		
+		$lineitems = [];		
+		array_push($lineitems, $this->getLineItem());
+
+		$getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+		$contactId = $getContact->getContacts()[0]->getContactId();
+
+//[RepeatingInvoices:Create]
+	$contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+	$contact->setContactId($contactId);
+
+	$schedule = new XeroAPI\XeroPHP\Models\Accounting\Schedule;
+	$schedule->setPeriod(1)
+		->setUnit('MONTHLY')
+		->setDueDate(31)
+		->setDueDateType('OFCURRENTMONTH')
+		->setStartDate( new DateTime('2022-07-04') )
+		->setNextScheduleDate( new DateTime ('2022-07-06'));
+
+
+	$arr_invoices = [];	
+
+	$invoice = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoice;
+	$invoice->setReference('Ref-' . $this->getRandNum())
+	->setDueDate(new DateTime('2019-12-10'))
+	->setContact($contact)
+	->setSchedule($schedule)
+	->setLineItems($lineitems)
+	->setStatus(XeroAPI\XeroPHP\Models\Accounting\Invoice::STATUS_AUTHORISED)
+	->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCPAY)
+	->setLineAmountTypes(\XeroAPI\XeroPHP\Models\Accounting\LineAmountTypes::EXCLUSIVE);	
+	array_push($arr_invoices, $invoice);
+				
+$invoices = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoices;
+$invoices->setInvoices($arr_invoices);
+
+$result = $apiInstance->createRepeatingInvoices($xeroTenantId,$invoices); 
+//[/RepeatingInvoices:Create]
+		
+		$str = $str ."Create Invoice 1 total amount: " . $result->getRepeatingInvoices()[0]->getTotal() ." and Create Invoice 2 total amount: " . $result->getInvoices()[1]->getTotal() . "<br>" ;
+
+		
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
 
 	}	
 
@@ -3310,8 +3372,8 @@ $result = $projectApi->getProject($xeroTenantId,$projectId);
 //[Project:Create]
 $projectCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\ProjectCreateOrUpdate;
 $projectCreateOrUpdate->setContactId($contactId)
-	->setName("New Fence")
-	->setDeadlineUtc(new DateTime('2019-12-10T12:59:59Z'))
+	->setName("New Fencing")
+	->setDeadlineUtc(new DateTime('2022-12-10T12:59:59Z'))
 	->setEstimateAmount(199.00);
 	
 $result = $projectApi->createProject($xeroTenantId,$projectCreateOrUpdate); 						
@@ -3331,16 +3393,16 @@ $result = $projectApi->createProject($xeroTenantId,$projectCreateOrUpdate);
 		$str = '';
 		$new = $this->createProject($xeroTenantId,$projectApi,$accountingApi,true);
 		$projectId = $new->getProjectId();
-//[Project:Create]
-$projectCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\ProjectCreateOrUpdate;
-$projectCreateOrUpdate->setName("New Bathroom")
-	->setDeadlineUtc(new DateTime('2019-12-10T12:59:59Z'))
-	->setEstimateAmount(199.00);
-	
-$result = $projectApi->updateProject($xeroTenantId,$projectId,$projectCreateOrUpdate); 						
-//[/Project:Create]
+		//[Project:Create]
+		$projectCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\ProjectCreateOrUpdate;
+		$projectCreateOrUpdate->setName("New Bathroom")
+			->setDeadlineUtc(new DateTime('2019-12-10T12:59:59Z'))
+			->setEstimateAmount(199.00);
+			
+		$result = $projectApi->updateProject($xeroTenantId,$projectId,$projectCreateOrUpdate); 						
+		//[/Project:Create]
 
-		$str = $str . "Create project name: " . $result->getName() . "<br>";
+		$str = $str . "Create project name: " . "<br>";
 		
 		if($returnObj) {
 			return $result;
@@ -3353,11 +3415,15 @@ $result = $projectApi->updateProject($xeroTenantId,$projectId,$projectCreateOrUp
 	{
 		$str = '';
 
-//[Projects:Read]
-$result = $projectApi->getProjects($xeroTenantId); 						
-//[/Projects:Read]
-
-		$str = $str . "Get project count: " . $result->getPagination()->getItemCount() . "<br>";
+		//[Projects:Read]
+		$result = $projectApi->getProjects($xeroTenantId); 						
+		//[/Projects:Read]
+		$str .= '<br> ------- <br>';
+		foreach ($result->getItems() as $thisitem) {
+			$str .= 'ProjectId : '. $thisitem['project_id'] . '<br>';			
+		}
+		$str .= '<br> -------  <br>';
+		$str .= "Get project count: " . $result->getPagination()->getItemCount() . "<br>";
 		
 		if($returnObj) {
 			return $result;
@@ -3365,6 +3431,295 @@ $result = $projectApi->getProjects($xeroTenantId);
 			return $str;
 		}
 	}
+
+	public function patchProject($xeroTenantId,$projectApi,$returnObj=false) {
+    /* Used to update the status of a project
+	*/
+	  $str = '';
+       //[Project:Patch]
+	   $projects = $projectApi->getProjects($xeroTenantId, null, null,"INPROGRESS"); 
+	   $project_id = $projects->getItems()[0]['project_id'];
+	   $str .= "ProjectId : " . $project_id . " Proj Name : " . $projects->getItems()[0]['name'] . "<br>";
+	   $project_patch = new XeroAPI\XeroPHP\Models\Project\ProjectPatch;
+	   $project_patch->setStatus("CLOSED");
+
+	   $result = $projectApi->patchProject($xeroTenantId, $project_id, $project_patch);
+
+	   //[/Project:Patch]
+	    
+	   $str .= "Patch applied! " ;
+	  
+		if($result) {
+			return $result;
+		} else {
+			return $str;
+		}
+	}
+
+
+	public function getTasks($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[Tasks:Read]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id); 
+		//[/Tasks:Read]
+		
+		echo print_r($tasks->getItems()[0]['task_id'], true);
+
+		$str = $str . "<br>First Task in list : " . $tasks->getItems()[0]['task_id'] . "<br>"; 
+		$str = $str . "Name : " . $tasks->getItems()[0]['name'] . "<br>"; 
+		if($returnObj) {
+			return $tasks;
+		} else {
+			return $str;
+		}
+		
+	}
+
+	public function createTask($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[Tasks:Create]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];
+		$rate = [ 
+			    "currency" =>'USD', 
+				"value" => 50.00
+				] ;
+		$taskCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\TaskCreateOrUpdate;
+        $taskCreateOrUpdate->setName("Meeting on Site")
+		->setRate($rate) // new object
+		->setChargeType("FIXED")
+		->setEstimateMinutes("120");
+
+		$result = $projectApi->createTask($xeroTenantId,$project_id,$taskCreateOrUpdate); 						
+				
+		//[/Tasks:Create]
+		$str = $str . "Task created! <br>";
+				
+				if($returnObj) {
+					return $result;
+				} else {
+					return $str;
+				}
+	}
+
+	public function updateTask($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[Tasks:Update]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id,); 
+		$task_id = $tasks->getItems()[0]['task_id'];
+		$task_name = $tasks->getItems()[0]['name'];
+		$str = "Task : '" . $task_name . "'";
+		$rate = [ 
+			    "currency" =>'USD', 
+				"value" => 750.00
+				] ;
+
+		$taskCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\TaskCreateOrUpdate;
+        $taskCreateOrUpdate->setName($task_name)
+		->setRate($rate)
+		->setChargeType("FIXED");
+		
+		$result = $projectApi->updateTask($xeroTenantId,$project_id,$task_id,$taskCreateOrUpdate); 						
+				
+		//[/Tasks:Update]
+		$str = $str . " updated! <br>";
+				
+				if($returnObj) {
+					return $result;
+				} else {
+					return $str;
+				}
+	}
+
+	public function deleteTask($xeroTenantId,$projectApi,$returnObj=false) {
+    /* Note that if the task has a service (time entry) associated or has a status INVOICED, it will not be removed.
+	*/
+		$str = '';
+		//[Tasks:Delete]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];
+		
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id,); 
+		$task_id = $tasks->getItems()[0]['task_id'];
+		$task_name = $tasks->getItems()[0]['name'];
+		
+		$str .= "Task : '" . $task_name . "' Task Id: " . $task_id;
+
+	    $result = $projectApi->deleteTask($xeroTenantId,$project_id,$task_id); 
+		//[/Tasks:Delete]
+
+		$str = $str . " deleted! <br>";
+		
+				if($returnObj) {
+					return $result;
+				} else {
+					return $str;
+				}
+
+	}
+
+	public function getTimeEntries($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[TimeEntries:Read]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id); 
+		$task_id = $tasks->getItems()[0]['task_id']; 
+		
+		$timeEntries = $projectApi->getTimeEntries($xeroTenantId, $project_id);
+		//[/TimeEntries:Read]
+
+		echo "<br><BR> project_id = ".$project_id. "<br><BR>";
+		echo "First Time Entry in list : " . $timeEntries->getItems()[0]['description']."<br>";
+		echo print_r($timeEntries);
+
+		$str = $str . "<br>First Time Entry ID in list : " . $timeEntries->getItems()[0]['task_id'] . "<br>"; 
+		$str = $str . "<br># of time entries in task : " . sizeof($timeEntries->getitems()) . "<br>"; 
+		//$str = $str . "Name : " . $tasks->getItems()[0]['name'] . "<br>"; 
+		if($returnObj) {
+			return $timeEntries;
+		} else {
+			return $str;
+		}
+		
+	}
+	public function getTimeEntry($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[TimeEntry:Read]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id); 
+		$task_id = $tasks->getItems()[0]['task_id']; 
+		$timeEntries = $projectApi->getTimeEntries($xeroTenantId, $project_id);
+				
+		$timeEntry_id = $timeEntries->getItems()[0]['time_entry_id'];
+		$timeEntry_desc =  $timeEntries->getItems()[0]['description']."<br><br>";
+		//[/TimeEntry:Read]
+
+		echo print_r($projectApi->getTimeEntry($xeroTenantId, $project_id, $timeEntry_id));
+
+		$str = $str . "<br>First Time Entry in list : " . $timeEntry_id . "<br>"; 
+		$str = $str . "Description : " . $timeEntry_desc . "<br>"; 
+		if($returnObj) {
+			return $timeEntry_id;
+		} else {
+			return $str;
+		}
+		
+	}
+
+	public function createTimeEntry($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[TimeEntry:Create]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];  
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id); 
+		$task_id = $tasks->getItems()[0]['task_id']; 
+		$timeEntries = $projectApi->getTimeEntries($xeroTenantId, $project_id);
+		$page = 1;
+		$pageSize = 10;
+		$users = $projectApi->getProjectUsers($xeroTenantId, $page, $pageSize);
+		$user_id = $users->getitems()[0]['user_id'];
+
+		$duration = 600;
+		
+		$timeEntryCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\TimeEntryCreateOrUpdate;
+        $timeEntryCreateOrUpdate->setDateutc(new DateTime('2022-12-04T12:59:59Z')) // new object
+		->setTaskId($task_id)
+		->setUserId($user_id)
+		->setDuration($duration)
+		->setDescription('this is a new description');
+		//[/TimeEntry:Create]
+
+		echo "Project ID is: ".$project_id."<br><br>";
+		echo "Task ID is: ".$task_id."<br><br>";
+		echo "User ID is: ".$user_id."<br><br>";
+		
+		echo "TimeEntry return is:" . print_r($timeEntry = $projectApi->createTimeEntry($xeroTenantId, $project_id, $timeEntryCreateOrUpdate));
+
+		$str = $str . "<br><br>Time Entry created! <br>"; 
+		//$str = $str . "Time Entry Date : " . $timeEntry->getDateUtc() . "<br>"; 
+		if($returnObj) {
+			return $timeEntry;
+		} else {
+			return $str;
+		}
+		
+	}
+
+	public function updateTimeEntry($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[TimeEntry:Update]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];  
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id); 
+		$task_id = $tasks->getItems()[0]['task_id']; 
+		$timeEntries = $projectApi->getTimeEntries($xeroTenantId, $project_id);			
+		$timeEntry_id = $timeEntries->getItems()[0]['time_entry_id'];
+		
+		$duration = 1200;
+		
+		$timeEntryCreateOrUpdate = new XeroAPI\XeroPHP\Models\Project\TimeEntryCreateOrUpdate;
+        $timeEntryCreateOrUpdate->setDuration($duration)
+		->setTaskId($task_id)
+		->setDescription('this is an updated description');
+
+		$timeEntry = $projectApi->updateTimeEntry($xeroTenantId, $project_id, $timeEntry_id, $timeEntryCreateOrUpdate);
+		//[/TimeEntry:Update]
+
+		
+
+		$str = $str . "<br><br>Time Entry ".$timeEntry_id.", has been updated! <br>"; 
+		//$str = $str . "Time Entry Date : " . $timeEntry->getDateUtc() . "<br>"; 
+		if($returnObj) {
+			return $timeEntry;
+		} else {
+			return $str;
+		}
+		
+	}
+
+
+	public function deleteTimeEntry($xeroTenantId,$projectApi,$returnObj=false) 
+	{
+		$str = '';
+		//[TimeEntry:Delete]
+		$projects = $projectApi->getProjects($xeroTenantId); 
+		$project_id = $projects->getItems()[0]['project_id'];
+		$tasks = $projectApi->getTasks($xeroTenantId, $project_id); 
+		$task_id = $tasks->getItems()[0]['task_id']; 
+		$timeEntries = $projectApi->getTimeEntries($xeroTenantId, $project_id);
+		
+		$timeEntry_id = $timeEntries->getItems()[0]['time_entry_id'];
+		$timeEntryDesc = $timeEntries->getItems()[0]['description'];
+	
+		$result = $projectApi->deleteTimeEntry($xeroTenantId, $project_id, $timeEntry_id);
+		//[/TimeEntry:Delete]
+
+		$str .= "Time Entry Desc : " . $timeEntryDesc . "<br> Time Entry Id: " . $timeEntry_id;
+		$str = $str . "<br>Time Entry Deleted!" . "<br>"; 
+		//$str = $str . "Name : " . $tasks->getItems()[0]['name'] . "<br>"; 
+		if($returnObj) {
+			return $result;
+		} else {
+			return $str;
+		}
+		
+	}
+
+
+
 
 
 /*
