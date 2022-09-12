@@ -655,7 +655,20 @@
 					    echo $action . " action not supported in API";
 				    }
 				 break;
+				 case "RepeatingInvoiceHistory":
+				    switch($action)
+					{
+						case "Create":
+							echo $ex->createRepeatingInvoiceHistory($xeroTenantId,$accountingApi);
+							break;
+							case "Read":
+							echo $ex->getRepeatingInvoiceHistory($xeroTenantId,$accountingApi);
+							break;
+							default:
+							echo $action . " action not supported in API";
 
+				    }
+				 break;
 				 case "Reports":
 				    switch($action)
 					{
