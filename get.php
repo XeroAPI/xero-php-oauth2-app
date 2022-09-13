@@ -651,6 +651,9 @@
 				    	case "Create":
 							echo $ex->createRepeatingInvoices($xeroTenantId,$accountingApi);
 							break;
+						case "Update":
+							echo $ex->updateRepeatingInvoice($xeroTenantId,$accountingApi);
+							break;
 						default:
 					    echo $action . " action not supported in API";
 				    }
