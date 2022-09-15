@@ -41,6 +41,7 @@
           
             $jwt = new XeroAPI\XeroPHP\JWTClaims();
             $jwt->setTokenId($accessToken->getValues()["id_token"]);
+
             $jwt->decode();
        
             $config = XeroAPI\XeroPHP\Configuration::getDefaultConfiguration()->setAccessToken( (string)$accessToken->getToken() );

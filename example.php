@@ -2647,6 +2647,166 @@ $result = $apiInstance->getRepeatingInvoices($xeroTenantId);
 		}
 	}
 
+	public function createRepeatingInvoice($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+       //[RepeatingInvoices:Create]
+	   $getContact = $this->getContact($xeroTenantId,$apiInstance,true);
+	   $contactId = $getContact->getContacts()[0]->getContactId();						
+	   $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+	   $contact->setContactId($contactId);
+	   
+	   $lineitems = [];	
+	   $lineitem = $this->getLineItem($xeroTenantId,$apiInstance);	
+		array_push($lineitems, $lineitem);
+	   // CREATE SCHEDULE
+
+	   $schedule = new XeroAPI\XeroPHP\Models\Accounting\Schedule;
+	   $schedule->setPeriod(2) //Integer used with the unit e.g. 1 (every 1 week), 2 (every 2 months)
+	            ->setUnit("MONTHLY") //can be WEEKLY
+				->setDueDate(5) //integer dependent on DueDateType
+				->setDueDateType("DAYSAFTERBILLDATE")  //e.g. DAYSAFTERBILLDATE, DAYSAFTERBILLMONTH, OFCURRENTMONTH,OFFOLLOWINGMONTH
+				->setNextScheduledDate(new DateTime('2022-09-02'));
+				//->setEndDate(); //optional
+				
+       // CREATE REPEATING INVOICE
+	   $repeat_invoice = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoice;
+	   $repeat_invoice->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC)
+	           ->setSchedule($schedule)
+			   ->setContact($contact)
+			   ->setLineItems($lineitems)
+			   ->setLineAmountTypes("Inclusive")
+			   ->setReference("RP4789")
+			   ->setCurrencyCode("GBP")
+			   ->setStatus("DRAFT")
+			   ->setApprovedForSending(false); //boolean - can be true only if Status is AUTHORISED
+			   
+		$repeat_invoices = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoices;
+		$arr_repeat_invoices = [];
+		 array_push($arr_repeat_invoices, $repeat_invoice);
+		$repeat_invoices->setRepeatingInvoices($arr_repeat_invoices);
+		$result = $apiInstance->createRepeatingInvoices($xeroTenantId,$repeat_invoices, true); 
+		//[/RepeatingInvoices:Create]	 			   
+		  //$str .= print_r($result, true);
+				 $str .= "Create Repeat Invoice total amount: " . $result->getRepeatingInvoices()[0]->getTotal() . "<br>" ;
+				 $str .= "Create Repeat Invoice Id: " . $result->getRepeatingInvoices()[0]->getId() . "<br>" ;
+					   if($returnObj) {
+						   return $result;
+					   } else {
+						   return $str;
+					   }
+     
+	}
+
+	public function updateRepeatingInvoice($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+       //[RepeatingInvoices:Update]
+	   $getContact = $this->getContacts($xeroTenantId,$apiInstance,true);
+	   $contactId = $getContact->getContacts()[0]->getContactId();						
+	   $contact = new XeroAPI\XeroPHP\Models\Accounting\Contact;
+	   $contact->setContactId($contactId);
+
+	   $where = 'Status=="DRAFT"&&Total>0';
+	   $result = $apiInstance->getRepeatingInvoices($xeroTenantId, $where); 
+
+	   $repeat_invoice_id = $result->getRepeatingInvoices()[0]->getId();
+	   //$str .= "Update for Invoice Id:" . $repeat_invoice_id  . "<br>" ;
+
+       // UPDATE THE SCHEDULE
+ 	   $schedule = new XeroAPI\XeroPHP\Models\Accounting\Schedule;
+ 	   $schedule->setPeriod(1) //Integer used with the unit e.g. 1 (every 1 week), 2 (every 2 months)
+		  ->setUnit("MONTHLY") //can be WEEKLY
+		  ->setDueDate(15) //integer dependent on DueDateType
+		  ->setDueDateType('OFCURRENTMONTH')  //e.g. DAYSAFTERBILLDATE, DAYSAFTERBILLMONTH, OFCURRENTMONTH,OFFOLLOWINGMONTH
+		  ->setNextScheduledDate(new DateTime('2022-09-01'));
+		  //->setEndDate(); //optional
+		  
+		// UPDATE REPEATING INVOICE - JUST THE SCHEDULE
+		$repeat_invoice = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoice;
+		$repeat_invoice->setType(XeroAPI\XeroPHP\Models\Accounting\Invoice::TYPE_ACCREC)
+				->setSchedule($schedule)
+				->setContact($contact)
+				->setId($repeat_invoice_id)
+				->setStatus("AUTHORISED")
+				->setApprovedForSending(true); //boolean
+				
+		$repeat_invoices = new XeroAPI\XeroPHP\Models\Accounting\RepeatingInvoices;
+		$arr_repeat_invoices = [];
+		array_push($arr_repeat_invoices, $repeat_invoice);
+		$repeat_invoices->setRepeatingInvoices($arr_repeat_invoices);	 
+		
+		$result = $apiInstance->updateOrCreateRepeatingInvoices($xeroTenantId,$repeat_invoices); 
+		
+		//[/RepeatingInvoices:Update]
+		         $str .= "Updated Repeating Invoice <br>";
+				 $str .= "Updated Repeat Status: " . $result->getRepeatingInvoices()[0]->getStatus() . "<br>" ;
+					   if($returnObj) {
+						   return $result;
+					   } else {
+						   return $str;
+					   }
+
+
+	}	
+
+	public function getRepeatingInvoiceHistory($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+
+		$str = '';
+        //[RepeatingInvoiceHistory:Read]
+
+		$where = 'Status=="AUTHORISED"&&Total>0';
+	    $result = $apiInstance->getRepeatingInvoices($xeroTenantId, $where); 
+	    $repeat_invoice_id = $result->getRepeatingInvoices()[0]->getId();
+		$result = $apiInstance->getRepeatingInvoiceHistory($xeroTenantId, $repeat_invoice_id);
+
+		//[/RepeatingInvoiceHistory:Read]
+
+		$str .= "<pre><?php echo " . print_r($result, true) . "?></pre>" ;
+
+				if($returnObj) {
+				   return $result;
+				  } else {
+				   return $str;
+				  }
+
+	}
+
+	public function createRepeatingInvoiceHistory($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+     //[RepeatingInvoiceHistory:Create]
+		$where = 'Status=="DRAFT"&&Total>0';
+	    $result = $apiInstance->getRepeatingInvoices($xeroTenantId, $where); 
+	    $repeat_invoice_id = $result->getRepeatingInvoices()[0]->getId();
+
+		$historyRecord = new XeroAPI\XeroPHP\Models\Accounting\HistoryRecord;
+		$historyRecord->setDetails('Update the currency')
+					  ->setChanges('Edited')
+					  ->setDateUtc(new DateTime("now", new \DateTimeZone("UTC")));	
+
+		$historyRecords = new XeroAPI\XeroPHP\Models\Accounting\HistoryRecords;
+		$arr_history_records = [];
+		array_push($arr_history_records, $historyRecord);
+		$historyRecords->setHistoryRecords($arr_history_records);
+
+       //[/RepeatingInvoiceHistory:Create]
+
+		$result = $apiInstance->createRepeatingInvoiceHistory($xeroTenantId, $repeat_invoice_id, $historyRecords);
+
+		$str .= "Repeat InvoiceId : " . $repeat_invoice_id;
+		$str .= "<pre><?php echo " . print_r($result, true) . "?></pre>" ;
+
+				if($returnObj) {
+				   return $result;
+				  } else {
+				   return $str;
+				  }
+	}
+	
 	public function createRepeatingInvoices($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
