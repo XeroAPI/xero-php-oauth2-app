@@ -319,6 +319,13 @@ file_put_contents($dir_to_save . $savedFileName , $content);
 		}
 	}	
 
+	public function getAssociationsCount($xeroTenantId, $filesApi)
+	{
+		$objects = "0c0f2162-7f7e-4816-a5f7-1e24a6299d3c,0bdc1542-6987-42f8-97a3-eb453f5314b7";
+        $result = $filesApi->getAssociationsCount($xeroTenantId,$objects);
+		echo '<pre>'; print_r($result); echo '</pre>';
+	}
+
 	public function getAccounts($xeroTenantId,$apiInstance,$returnObj=false)
 	{
 		$str = '';
@@ -665,14 +672,18 @@ $result = $apiInstance->updateContact($xeroTenantId,$contactId,$contact);
 //[Contacts:Read]
 // read all contacts 
 $result = $apiInstance->getContacts($xeroTenantId); 		
-
 // filter by contacts by status
 $where = 'ContactStatus=="ACTIVE"';
-$result2 = $apiInstance->getContacts($xeroTenantId, null, $where); 
+$order = "Name ASC";
+$page = 0;
+$includeArchived = true;
+$summaryOnly = true;
+$searchTerm = "";
+$result2 = $apiInstance->getContacts($xeroTenantId, null, $where, $order,null,$page,$includeArchived,$summaryOnly,$searchTerm); 
 //[/Contacts:Read]
 
-		$str = $str . "Get Contacts Total: " . count($result->getContacts()) . "<br>";
-		$str = $str . "Get ACTIVE Contacts Total: " . count($result2->getContacts()) . "<br>";
+    $str = $str . "Get Contacts Total: " . count($result->getContacts()) . "<br>";
+	$str = $str . "Get ACTIVE Contacts Total: " . count($result2->getContacts()) . "<br>";
 
 		if($returnObj) {
 			return $result2;
@@ -2039,6 +2050,24 @@ $result = $apiInstance->getPayments($xeroTenantId);
 		} else {
 			return $str;
 		}
+	}
+
+	public function getPaymentFullyPaidDate($xeroTenantId,$apiInstance,$returnObj=false)
+	{
+		$str = '';
+
+//[PaymentsFullyPaidDate:Read]						
+//$invoice = new XeroAPI\XeroPHP\Models\Accounting\Invoice;
+$invoiceId = '1300d9d0-cf54-4b1b-9a75-8b338a8ca7df';
+$invoice = $apiInstance->getInvoice($xeroTenantId,$invoiceId);
+//$invoice->setInvoiceID($invoiceId);
+var_dump( $invoice->getInvoices()[0]->getFullyPaidOnDateAsDate());
+$result = $invoice->getInvoices()[0]->getFullyPaidOnDateAsDate(); 
+		$str = print_r($result,true) . "<br>";
+//[/PaymentsFullyPaidDate:Read]	
+
+return $str;
+		
 	}
 
 	public function createPayment($xeroTenantId,$apiInstance,$returnObj=false)
