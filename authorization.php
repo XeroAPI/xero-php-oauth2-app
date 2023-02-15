@@ -23,7 +23,7 @@
 
 	
 	$options = [
-		'scope' => ['openid email profile offline_access assets projects accounting.settings accounting.transactions accounting.contacts accounting.journals.read accounting.reports.read accounting.attachments']
+		'scope' => ['openid email profile offline_access assets projects accounting.settings accounting.transactions accounting.contacts accounting.journals.read accounting.reports.read accounting.attachments files files.read']
 		// finance.accountingactivity.read finance.bankstatementsplus.read finance.cashvalidation.read finance.statements.read
 	];
 

@@ -75,6 +75,11 @@
 	    $config
 	);
 
+	$filesApi = new XeroAPI\XeroPHP\Api\FilesApi(
+	    new GuzzleHttp\Client(),
+	    $config
+	);
+
 	if (isset($_POST["endpoint"]) ) {
 		$endpoint = htmlspecialchars($_POST["endpoint"]);
 	} else {
@@ -278,7 +283,7 @@
 						echo $ex->createContacts($xeroTenantId,$accountingApi);
 						break;
 				        case "Read":
-				        echo $ex->getContact($xeroTenantId,$accountingApi);
+				        echo $ex->getContacts($xeroTenantId,$accountingApi);
 				        break;
 				        case "UpdateOrCreate":
 				        echo $ex->updateOrCreateContacts($xeroTenantId,$accountingApi);
@@ -416,6 +421,9 @@
 				    	case "Void":
 				        echo $ex->voidInvoice($xeroTenantId,$accountingApi);
 						break;
+						case "FullPaidDate":
+							echo $ex->getPaymentFullyPaidDate($xeroTenantId,$accountingApi);
+						break;	
 						default:
 					    echo $action . " action not supported in API";
 				    }
@@ -955,6 +963,17 @@
 				    	case "Read":
 				        echo $ex->getCashValidation($xeroTenantId,$financeApi);
 						break;
+				       	default:
+					    echo $action . " action not supported in API";
+				    }
+				 break;
+
+				 case "FilesAssocCount":
+				    switch($action)
+					{
+				    	case "Read":
+				        echo $ex->getAssociationsCount($xeroTenantId,$filesApi);
+				        break;
 				       	default:
 					    echo $action . " action not supported in API";
 				    }
